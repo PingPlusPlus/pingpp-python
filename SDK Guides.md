@@ -23,7 +23,7 @@ chs = pingpp.Charge.all()
 
 ## Expanding 展开对象
 ```python
-    ch = pingpp.Charge.retrieve(id='CHARGE-ID', expand='app')
+ch = pingpp.Charge.retrieve(id='CHARGE-ID', expand='app')
 ```
 ## Metadata 元数据
 ```python
