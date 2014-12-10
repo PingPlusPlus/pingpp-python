@@ -1,10 +1,9 @@
-
-# PingPP-Python SDK 
+# PingPP-Python SDK ReadMe
 ----------
 
 ## 简介
 
-pingpp 文件夹下是 Python SDK 文件，<br>
+pingpp 文件夹下是 Python SDK 文件，
 example 文件夹里面是简单的接入示例，该示例仅供参考。
 
 ## 安装
@@ -85,3 +84,36 @@ ch = pingpp.Charge.retrieve('CHARGE-ID')
 res = ch.refunds.all(limit=3)
 ```
     
+## 集成与 C-SDK 通信的 HTTP 接口
+以Flask为例：
+```
+pip install flask
+```
+可以使用以下的样例代码:
+```
+import pingpp
+from flask import Flask,request
+
+app = Flask(__name__)
+
+
+@app.route('/', methods=['GET', 'POST'])
+def do_charge():
+    form = request.get_json()
+    response_charge = pingpp.Charge.create(api_key="YOUR_KEY", **form)
+    return str(response_charge)
+#本例用Content-Type:application/json形式的请求举例
+if __name__ == '__main__':
+    app.run(debug=True)
+```
+执行此脚本:
+```
+python xxx.py
+```
+向这个地址发送一个**POST**请求
+(请务必用标准Json，并附带**Content-Type:application/json**的HTTP Header)
+```
+http://127.0.0.1:5000/
+```
+检查结果
+It's Done!
