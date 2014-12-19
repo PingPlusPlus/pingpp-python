@@ -17,4 +17,6 @@ from pingpp.resource import (
     APIResource, ListObject, SingletonAPIResource, ListableAPIResource,
     CreateableAPIResource, UpdateableAPIResource, DeletableAPIResource)
 
+from pingpp.wxpub_oauth import WxpubOauth
+
 api_version = VERSION
