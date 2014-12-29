@@ -20,7 +20,7 @@ install_requires = []
 if sys.version_info < (2, 6):
     warnings.warn(
         'Python 2.5 is not officially supported by Ping++. '
-        'If you have any questions, please contact us at support@pingplusplus.com.',
+        'If you have any questions, please contact us at support@pingxx.com.',
         DeprecationWarning)
     install_requires.append('requests >= 0.8.8, < 0.10.1')
     install_requires.append('ssl')
@@ -45,8 +45,8 @@ setup(
     version=VERSION,
     description='Ping++ python bindings',
     author='Ping++',
-    author_email='support@pingplusplus.com',
-    url='https://pingplusplus.com/',
+    author_email='support@pingxx.com',
+    url='https://pingxx.com/',
     packages=['pingpp'],
     package_data={'pingpp': ['data/ca-certificates.crt', '../VERSION']},
     install_requires=install_requires,

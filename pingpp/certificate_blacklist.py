@@ -24,7 +24,7 @@ def verify(certificate):
                        "connect to a server that has a revoked "
                        "SSL certificate, which means we cannot "
                        "securely send data to that server. "
-                       "Please email support@pingplusplus.com if you "
+                       "Please email support@pingxx.com if you "
                        "need help connecting to the correct API "
                        "server.")
     return True
