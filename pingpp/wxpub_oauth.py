@@ -22,10 +22,12 @@ class WxpubOauth:
         """
         url = WxpubOauth.create_oauth_url_for_openid(app_id, app_secret, code)
         client = http_client.new_default_http_client()
-        res = client.request(url, 'get')
-        data = util.json.loads(res)
+        rbody, rcode = client.request('GET', url, {})
+        if rcode == 200:
+            data = util.json.loads(rbody)
+            return data['openid']
 
-        return data['openid']
+        return None
 
     @staticmethod
     def create_oauth_url_for_code(app_id, redirect_url, more_info=False):
@@ -57,7 +59,7 @@ class WxpubOauth:
         :param app_id: 微信公众号应用唯一标识
         :param app_secret: 微信公众号应用密钥（注意保密）
         :param code: 授权code, 通过调用WxpubOAuth.createOauthUrlForCode来获取
-        :return:获取openid的URL地址
+        :return: 获取openid的URL地址
         """
         data = dict()
         data['appid'] = app_id

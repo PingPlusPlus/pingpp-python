@@ -2,7 +2,7 @@
 # Configuration variables
 
 api_key = None
-api_base = 'https://api.pingplusplus.com'
+api_base = 'https://api.pingxx.com'
 verify_ssl_certs = True
 
 from pingpp.resource import Charge
