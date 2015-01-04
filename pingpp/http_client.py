@@ -40,7 +40,7 @@ else:
                 '"requests" library is version %s. Ping++ will fall back to '
                 'an alternate HTTP library so everything should work. We '
                 'recommend upgrading your "requests" library. If you have any '
-                'questions, please contact support@pingplusplus.com. (HINT: running '
+                'questions, please contact support@pingxx.com. (HINT: running '
                 '"pip install -U requests" should upgrade your requests '
                 'library to the latest version.)' % (version,))
             requests = None
@@ -124,13 +124,13 @@ class RequestsClient(HTTPClient):
         if isinstance(e, requests.exceptions.RequestException):
             msg = ("Unexpected error communicating with Ping++.  "
                    "If this problem persists, let us know at "
-                   "support@pingplusplus.com.")
+                   "support@pingxx.com.")
             err = "%s: %s" % (type(e).__name__, str(e))
         else:
             msg = ("Unexpected error communicating with Ping++. "
                    "It looks like there's probably a configuration "
                    "issue locally.  If this problem persists, let us "
-                   "know at support@pingplusplus.com.")
+                   "know at support@pingxx.com.")
             err = "A %s was raised" % (type(e).__name__,)
             if str(e):
                 err += " with error message %s" % (str(e),)
@@ -151,7 +151,7 @@ class UrlFetchClient(HTTPClient):
                 headers=headers,
                 # Google App Engine doesn't let us specify our own cert bundle.
                 # However, that's ok because the CA bundle they use recognizes
-                # api.pingplusplus.com.
+                # api.pingxx.com.
                 validate_certificate=self._verify_ssl_certs,
                 # GAE requests time out after 60 seconds, so make sure we leave
                 # some time for the application to handle a slow Ping++
@@ -168,16 +168,16 @@ class UrlFetchClient(HTTPClient):
             msg = ("The Ping++ library attempted to fetch an "
                    "invalid URL (%r). This is likely due to a bug "
                    "in the Ping++ Python bindings. Please let us know "
-                   "at support@pingplusplus.com." % (url,))
+                   "at support@pingxx.com." % (url,))
         elif isinstance(e, urlfetch.DownloadError):
             msg = "There was a problem retrieving data from Ping++."
         elif isinstance(e, urlfetch.ResponseTooLargeError):
             msg = ("There was a problem receiving all of your data from "
                    "Ping++.  This is likely due to a bug in Ping++. "
-                   "Please let us know at support@pingplusplus.com.")
+                   "Please let us know at support@pingxx.com.")
         else:
             msg = ("Unexpected error communicating with Ping++. If this "
-                   "problem persists, let us know at support@pingplusplus.com.")
+                   "problem persists, let us know at support@pingxx.com.")
 
         msg = textwrap.fill(msg) + "\n\n(Network error: " + str(e) + ")"
         raise error.APIConnectionError(msg)
@@ -228,17 +228,17 @@ class PycurlClient(HTTPClient):
             msg = ("Could not connect to Ping++.  Please check your "
                    "internet connection and try again.  If this problem "
                    "persists, you should check Ping++'s service status at "
-                   "https://pingplusplus.com or let us know at "
-                   "support@pingplusplus.com.")
+                   "https://pingxx.com or let us know at "
+                   "support@pingxx.com.")
         elif (e[0] in [pycurl.E_SSL_CACERT,
                        pycurl.E_SSL_PEER_CERTIFICATE]):
             msg = ("Could not verify Ping++'s SSL certificate.  Please make "
                    "sure that your network is not intercepting certificates.  "
                    "If this problem persists, let us know at "
-                   "support@pingplusplus.com.")
+                   "support@pingxx.com.")
         else:
             msg = ("Unexpected error communicating with Ping++. If this "
-                   "problem persists, let us know at support@pingplusplus.com.")
+                   "problem persists, let us know at support@pingxx.com.")
 
         msg = textwrap.fill(msg) + "\n\n(Network error: " + e[1] + ")"
         raise error.APIConnectionError(msg)
@@ -272,6 +272,6 @@ class Urllib2Client(HTTPClient):
 
     def _handle_request_error(self, e):
         msg = ("Unexpected error communicating with Ping++. "
-               "If this problem persists, let us know at support@pingplusplus.com.")
+               "If this problem persists, let us know at support@pingxx.com.")
         msg = textwrap.fill(msg) + "\n\n(Network error: " + str(e) + ")"
         raise error.APIConnectionError(msg)
