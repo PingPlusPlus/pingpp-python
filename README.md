@@ -1,4 +1,4 @@
-# pingpp Python SDK
+# Pingpp Python SDK
 ----------
 
 ## 简介
@@ -13,5 +13,6 @@ pip install pingpp
 ```
 python setup.py install
 ```
+
 ## 接入方法
 关于如何使用 SDK 请参考 [技术文档](https://pingxx.com/document) 或者参考 [example](https://github.com/PingPlusPlus/pingpp-python/tree/master/example) 文件夹里的示例。
