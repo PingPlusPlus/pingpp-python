@@ -14,21 +14,19 @@ def do_charge():
     print request.url
     form = request.get_json()
     print form
-    salt = ''.join(random.sample(string.ascii_letters + string.digits, 8))
+    orderno = ''.join(random.sample(string.ascii_letters + string.digits, 8))
     if isinstance(form, dict):
-        form['order_no'] = salt
-        form['app'] = dict(id="app_id")
+        form['order_no'] = orderno
+        form['app'] = dict(id="YOUR-APP-ID")
         form['currency'] = "cny"
-        form['client_ip'] = "192.168.1.1"
-        form['subject'] = "test-subject"
-        form['body'] = "test-body"
+        form['client_ip'] = "127.0.0.1"
+        form['subject'] = "Your Subject"
+        form['body'] = "Your Body"
     print form
-    pingpp.api_key = "sk_live_1SujP4z9mLq54CKqbDqvDqH8"
-    response_charge = pingpp.Charge.create(api_key="key", **form)
+    pingpp.api_key = "YOUR-KEY"
+    response_charge = pingpp.Charge.create(api_key=pingpp.api_key, **form)
     print "Response_Charge: " + str(response_charge)
     return Response(json.dumps(response_charge), mimetype='application/json')
-
-
 
 if __name__ == '__main__':
     app.run(debug=True,port=8888,host="0.0.0.0")

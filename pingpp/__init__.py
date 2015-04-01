@@ -5,10 +5,12 @@ api_key = None
 api_base = 'https://api.pingxx.com'
 verify_ssl_certs = True
 
-from pingpp.resource import Charge
 from pingpp.error import (
     PingppError, APIError, APIConnectionError, AuthenticationError, CardError,
     InvalidRequestError)
+
+from pingpp.resource import Charge
+from pingpp.resource import RedEnvelope
 
 from pingpp.version import VERSION
 from pingpp.api_requestor import APIRequestor

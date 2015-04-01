@@ -1,17 +1,20 @@
 #!/usr/bin/env python
 import pingpp
 
-pingpp.api_key = 'API-KEY'
+pingpp.api_key = 'YOUR-KEY'
+extras=dict()
 
 ch = pingpp.Charge.create(
-    order_no='1234567890',
+    order_no='123456789',
     channel='alipay',
     amount=1,
-    subject='test-subject',
-    body='test-body',
+    subject='Your Subject',
+    body='Your Subject',
     currency='cny',
-    app=dict(id='APP-ID'),
-    client_ip='CLIENT-ID'
+    app=dict(id='YOUR-APP-ID'),
+    client_ip='127.0.0.1'
 )
-
 print ch
+
+red = pingpp.RedEnvelope.retrieve('RED-ID')
+print red

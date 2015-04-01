@@ -6,7 +6,7 @@ from pingpp import api_requestor, error, util
 
 
 def convert_to_pingpp_object(resp, api_key):
-    types = {'charge': Charge, 'list': ListObject, 'refund': Refund}
+    types = {'charge': Charge, 'list': ListObject, 'refund': Refund,'red_envelope':RedEnvelope}
 
     if isinstance(resp, list):
         return [convert_to_pingpp_object(i, api_key) for i in resp]
@@ -314,11 +314,17 @@ class DeletableAPIResource(APIResource):
 
 class Charge(CreateableAPIResource, ListableAPIResource,
              UpdateableAPIResource):
-
+    print 111
     def refund(self, **params):
         url = self.instance_url() + '/refunds'
         self.refresh_from(self.request('post', url, params))
         return self
+
+class RedEnvelope(CreateableAPIResource, ListableAPIResource,
+             UpdateableAPIResource):
+    @classmethod
+    def class_name(cls):
+        return 'red_envelope'
 
 class Refund(UpdateableAPIResource):
 

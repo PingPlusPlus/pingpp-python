@@ -41,13 +41,13 @@ if sys.version_info < (3, 0):
 
 setup(
     name='pingpp',
+    packages=["pingpp"],
     cmdclass={'build_py': build_py},
     version=VERSION,
     description='Ping++ python bindings',
     author='Ping++',
     author_email='support@pingxx.com',
     url='https://pingxx.com/',
-    packages=['pingpp'],
     package_data={'pingpp': ['data/ca-certificates.crt', '../VERSION']},
     install_requires=install_requires,
     use_2to3=True,
