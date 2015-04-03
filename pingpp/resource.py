@@ -314,7 +314,6 @@ class DeletableAPIResource(APIResource):
 
 class Charge(CreateableAPIResource, ListableAPIResource,
              UpdateableAPIResource):
-    print 111
     def refund(self, **params):
         url = self.instance_url() + '/refunds'
         self.refresh_from(self.request('post', url, params))
