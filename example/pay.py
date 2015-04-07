@@ -16,5 +16,3 @@ ch = pingpp.Charge.create(
 )
 print ch
 
-red = pingpp.RedEnvelope.retrieve('RED-ID')
-print red
