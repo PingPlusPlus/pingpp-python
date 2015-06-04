@@ -77,5 +77,14 @@ pingpp.RedEnvelope.retrieve('RED-ID')
 ```python
 pingpp.RedEnvelope.all()
 ```
+### 查询 event
+```python
+pingpp.Event.retrieve('RED-ID')
+```
+
+## 查询 event 列表
+```python
+pingpp.Event.all()
+```
 
 **详细信息请参考 [API 文档](https://pingxx.com/document/api?python)。**

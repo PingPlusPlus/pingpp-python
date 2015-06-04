@@ -4,4 +4,5 @@ import pingpp
 
 pingpp.api_key = 'APP-KEY'
 
-ch = pingpp.Charge.retrieve('CH-ID')
+# ch = pingpp.Charge.retrieve('CH-ID')
+eve = pingpp.Event.all()

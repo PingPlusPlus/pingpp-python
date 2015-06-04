@@ -325,6 +325,9 @@ class RedEnvelope(CreateableAPIResource, ListableAPIResource,
     def class_name(cls):
         return 'red_envelope'
 
+class Event(ListableAPIResource):
+    pass
+
 class Refund(UpdateableAPIResource):
 
     def instance_url(self):

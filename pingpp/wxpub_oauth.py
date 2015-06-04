@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 import urllib
+import time
+import random
+import string
+import hashlib
 
 from pingpp import http_client, util
 
@@ -22,7 +26,7 @@ class WxpubOauth:
         """
         url = WxpubOauth.create_oauth_url_for_openid(app_id, app_secret, code)
         client = http_client.new_default_http_client()
-        rbody, rcode = client.request('GET', url, {})
+        rbody, rcode = client.request('GET', url)
         if rcode == 200:
             data = util.json.loads(rbody)
             return data['openid']
@@ -69,3 +73,57 @@ class WxpubOauth:
         query_str = urllib.urlencode(data)
 
         return "https://api.weixin.qq.com/sns/oauth2/access_token?" + query_str
+
+    @staticmethod
+    def get_jsapi_ticket(app_id, app_secret):
+        """
+        获取微信公众号 jsapi_ticket
+        :param app_id: 微信公众号应用唯一标识
+        :param app_secret: 微信公众号应用密钥（注意保密）
+        :return: array 包含 jsapi_ticket 的数组或者错误信息
+        """
+        data = dict()
+        data['appid'] = app_id
+        data['secret'] = app_secret
+        data['grant_type'] = 'client_credential'
+        query_str = urllib.urlencode(data)
+        access_token_url = 'https://api.weixin.qq.com/cgi-bin/token?' + query_str
+        client = http_client.new_default_http_client()
+        rbody, rcode = client.request('GET', access_token_url, {})
+        rbody = util.json.loads(rbody)
+        if rcode != 200:
+            return rbody
+
+        data = dict()
+        data['access_token'] = rbody['access_token']
+        data['type'] = 'jsapi'
+        query_str = urllib.urlencode(data)
+        jsapi_ticket_url = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?' + query_str
+        print jsapi_ticket_url
+        client = http_client.new_default_http_client()
+        rbody, rcode = client.request('GET', jsapi_ticket_url, {})
+        data = util.json.loads(rbody)
+        if rcode == 200:
+            return data
+
+    @staticmethod
+    def get_signature(charge, jsapi_ticket, url):
+        """
+        获取微信公众号 jsapi_ticket
+        :param charge: charge 对象
+        :param jsapi_ticket: 调用 get_jsapi_ticket(app_id, app_secret)获得的 ticket
+        :param url
+        :return: string signature 字符串
+        """
+        credential = charge['credential']['wx_pub']
+        sign_dict = {
+            'nonceStr': credential['nonceStr'],
+            'jsapi_ticket': jsapi_ticket,
+            'timestamp': credential['timeStamp'],
+            'url': url
+        }
+        string = '&'.join(['%s=%s' % (key.lower(), sign_dict[key]) for key in sorted(sign_dict)])
+        sign_dict['signature'] = hashlib.sha1(string).hexdigest()
+        return sign_dict['signature']
+
+

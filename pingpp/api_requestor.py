@@ -157,7 +157,7 @@ class APIRequestor(object):
             raise error.AuthenticationError(
                 err.get('message'), rbody, rcode, resp)
         elif rcode == 402:
-            raise error.CardError(err.get('message'), err.get('param'),
+            raise error.ChannelError(err.get('message'), err.get('param'),
                                   err.get('code'), rbody, rcode, resp)
         else:
             raise error.APIError(err.get('message'), rbody, rcode, resp)
@@ -166,7 +166,10 @@ class APIRequestor(object):
         """
         Mechanism for issuing an API call
         """
+
         from pingpp import api_version
+        from pingpp import accept_language
+        my_accept_language = accept_language
 
         if self.api_key:
             my_api_key = self.api_key
@@ -216,7 +219,8 @@ class APIRequestor(object):
         headers = {
             'X-Pingpp-Client-User-Agent': util.json.dumps(ua),
             'User-Agent': 'Pingplusplus/v1 PythonBindings/%s' % (version.VERSION,),
-            'Authorization': 'Bearer %s' % (my_api_key,)
+            'Authorization': 'Bearer %s' % (my_api_key,),
+            'Accept-Language': my_accept_language
         }
 
         if method == 'post':
