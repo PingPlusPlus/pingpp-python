@@ -6,7 +6,9 @@ from pingpp import api_requestor, error, util
 
 
 def convert_to_pingpp_object(resp, api_key):
-    types = {'charge': Charge, 'list': ListObject, 'refund': Refund,'red_envelope':RedEnvelope}
+    types = {'charge': Charge, 'list': ListObject,
+             'refund': Refund, 'red_envelope': RedEnvelope,
+             'event': Event}
 
     if isinstance(resp, list):
         return [convert_to_pingpp_object(i, api_key) for i in resp]
@@ -327,6 +329,7 @@ class RedEnvelope(CreateableAPIResource, ListableAPIResource,
 
 class Event(ListableAPIResource):
     pass
+
 
 class Refund(UpdateableAPIResource):
 
