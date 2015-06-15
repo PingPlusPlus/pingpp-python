@@ -1,4 +1,3 @@
-__author__ = 'Lekton'
 
 import pingpp
 from flask import Flask,request,Response
