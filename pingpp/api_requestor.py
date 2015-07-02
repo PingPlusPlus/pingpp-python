@@ -6,6 +6,7 @@ import socket
 import urllib
 import urlparse
 import warnings
+import json
 
 import pingpp
 from pingpp import error, http_client, version, util, certificate_blacklist
@@ -194,7 +195,7 @@ class APIRequestor(object):
                 abs_url = _build_api_url(abs_url, encoded_params)
             post_data = None
         elif method == 'post':
-            post_data = encoded_params
+            post_data = json.dumps(params)
         else:
             raise error.APIConnectionError(
                 'Unrecognized HTTP method %r.  This may indicate a bug in the '
@@ -224,7 +225,7 @@ class APIRequestor(object):
         }
 
         if method == 'post':
-            headers['Content-Type'] = 'application/x-www-form-urlencoded'
+            headers['Content-Type'] = 'application/json;charset=UTF-8'
 
         if api_version is not None:
             headers['Pingplusplus-Version'] = api_version

@@ -2,7 +2,6 @@
 import pingpp
 
 pingpp.api_key = 'YOUR-KEY'
-extras = dict()
 
 ch = pingpp.Charge.create(
     order_no='123456789',

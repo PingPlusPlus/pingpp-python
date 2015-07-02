@@ -52,7 +52,6 @@ class WxpubOauth:
         data['scope'] = 'snsapi_userinfo' if more_info else 'snsapi_base'
         data['state'] = 'STATE#wechat_redirect'
         query_str = urllib.urlencode(data)
-        print query_str
 
         return "https://open.weixin.qq.com/connect/oauth2/authorize?" + query_str
 
@@ -99,7 +98,6 @@ class WxpubOauth:
         data['type'] = 'jsapi'
         query_str = urllib.urlencode(data)
         jsapi_ticket_url = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?' + query_str
-        print jsapi_ticket_url
         client = http_client.new_default_http_client()
         rbody, rcode = client.request('GET', jsapi_ticket_url, {})
         data = util.json.loads(rbody)

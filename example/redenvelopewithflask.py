@@ -30,7 +30,7 @@ def do_redenvelope():
     pingpp.api_key = "YOUR-KEY"
     response_redenvelope = pingpp.RedEnvelope.create(api_key=pingpp.api_key, **form)
     print "Response_redenvelope: " + str(response_redenvelope)
-    return Response(json.dumps(response_redenvelope), mimetype='application/json')
+    return Response(json.dumps(response_redenvelope), mimetype='application/json,charset=UTF-8')
 
 if __name__ == '__main__':
     app.run(debug=True,port=8888,host="0.0.0.0")

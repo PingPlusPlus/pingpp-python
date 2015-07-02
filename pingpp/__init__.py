@@ -12,6 +12,7 @@ from pingpp.error import (
 from pingpp.resource import Charge
 from pingpp.resource import RedEnvelope
 from pingpp.resource import Event
+from pingpp.resource import Transfer
 
 from pingpp.version import VERSION
 from pingpp.api_requestor import APIRequestor

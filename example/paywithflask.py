@@ -12,7 +12,7 @@ app = Flask(__name__)
 def do_charge():
     print request.url
     form = request.get_json()
-    print form
+    print form['app']['id']
     orderno = ''.join(random.sample(string.ascii_letters + string.digits, 8))
     if isinstance(form, dict):
         form['order_no'] = orderno
@@ -25,7 +25,7 @@ def do_charge():
     pingpp.api_key = "YOUR-KEY"
     response_charge = pingpp.Charge.create(api_key=pingpp.api_key, **form)
     print "Response_Charge: " + str(response_charge)
-    return Response(json.dumps(response_charge), mimetype='application/json')
+    return Response(json.dumps(response_charge), mimetype='application/json,charset=UTF-8')
 
 if __name__ == '__main__':
-    app.run(debug=True,port=8888,host="0.0.0.0")
+    app.run(debug=True, port=8888, host="0.0.0.0")

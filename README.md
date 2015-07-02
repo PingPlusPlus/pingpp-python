@@ -87,4 +87,29 @@ pingpp.Event.retrieve('RED-ID')
 pingpp.Event.all()
 ```
 
+### 微信企业付款
+
+```python
+tr = pingpp.Transfer.create(
+    order_no='1234567890',
+    channel='wx_pub',
+    amount=100,
+    currency='cny',
+    app=dict(id='YOUR-APP-ID'),
+    type='b2c',
+    recipient='youropenid',
+    extra=dict(user_name='User Name', force_check=True),
+    description='description'
+)
+```
+
+### 查询
+```python
+pingpp.Transfer.retrieve('TR-ID')
+```
+
+```python
+pingpp.Transfer.all()
+```
+
 **详细信息请参考 [API 文档](https://pingxx.com/document/api?python)。**
