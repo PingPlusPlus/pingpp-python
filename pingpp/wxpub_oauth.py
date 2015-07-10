@@ -26,7 +26,7 @@ class WxpubOauth:
         """
         url = WxpubOauth.create_oauth_url_for_openid(app_id, app_secret, code)
         client = http_client.new_default_http_client()
-        rbody, rcode = client.request('GET', url)
+        rbody, rcode = client.request('GET', url, {})
         if rcode == 200:
             data = util.json.loads(rbody)
             return data['openid']
