@@ -11,7 +11,7 @@ ch = pingpp.Charge.create(
     channel='alipay',
     amount=1,
     subject='Your Subject',
-    body='Your Subject',
+    body='Your Body',
     currency='cny',
     app=dict(id='app_1Gqj58ynP0mHeX1q'),
     client_ip='127.0.0.1'
