@@ -36,24 +36,24 @@ class WxpubOauth:
     @staticmethod
     def create_oauth_url_for_code(app_id, redirect_url, more_info=False):
         """
-        用于获取授权code的URL地址，此地址用于用户身份鉴权，获取用户身份信息，同时重定向到$redirect_url
+        用于获取授权 code 的 URL 地址，此地址用于用户身份鉴权，获取用户身份信息，同时重定向到 redirect_url
         :param app_id: 微信公众号应用唯一标识
-        :param redirect_url: 授权后重定向的回调链接地址，重定向后此地址将带有授权code参数，
+        :param redirect_url: 授权后重定向的回调链接地址，重定向后此地址将带有授权 code 参数，
                              该地址的域名需在微信公众号平台上进行设置，
                              步骤为：登陆微信公众号平台 => 开发者中心 => 网页授权获取用户基本信息 => 修改
-        :param more_info: FALSE 不弹出授权页面,直接跳转,这个只能拿到用户openid
-                          TRUE 弹出授权页面,这个可以通过 openid 拿到昵称、性别、所在地，
-        :return: 用于获取授权code的URL地址
+        :param more_info: False 不弹出授权页面,直接跳转,这个只能拿到用户 openid
+                          True 弹出授权页面,这个可以通过 openid 拿到昵称、性别、所在地，
+        :return: 用于获取授权 code 的 URL 地址
         """
-        data = dict()
-        data['appid'] = app_id
-        data['redirect_uri'] = redirect_url
-        data['response_type'] = 'code'
-        data['scope'] = 'snsapi_userinfo' if more_info else 'snsapi_base'
-        data['state'] = 'STATE#wechat_redirect'
-        query_str = urllib.urlencode(data)
+        data = []
+        data.append('appid=' + app_id)
+        data.append('redirect_uri=' + urllib.quote(redirect_url, ''))
+        data.append('response_type=code')
+        data.append('scope=' + ('snsapi_userinfo' if more_info else 'snsapi_base'))
+        data.append('state=STATE#wechat_redirect')
+        query_str = '&'.join(data)
 
-        return "https://open.weixin.qq.com/connect/oauth2/authorize?" + query_str
+        return 'https://open.weixin.qq.com/connect/oauth2/authorize?' + query_str
 
     @staticmethod
     def create_oauth_url_for_openid(app_id, app_secret, code):
