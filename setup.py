@@ -26,10 +26,11 @@ if sys.version_info < (2, 6):
     install_requires.append('ssl')
 else:
     install_requires.append('requests >= 0.8.8')
+    install_requires.append('pycrypto >= 2.6.1')
 
 # Don't import pingpp module here, since deps may not be installed
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'pingpp'))
-from version import VERSION
+from pingpp.version import VERSION
 
 # Get simplejson if we don't already have json
 if sys.version_info < (3, 0):
