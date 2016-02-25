@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 import pingpp
 
-pingpp.api_key = 'API-KEY'
+pingpp.api_key = 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
+pingpp.private_key_path = 'your_rsa_private_key.pem'
 
 ch = pingpp.Charge.create(
-    order_no='1234567890',
-    channel='alipay',
+    subject='Your Subject',
+    body='Your Body',
     amount=1,
-    subject='test-subject',
-    body='test-body',
+    order_no='12345678',
     currency='cny',
-    app=dict(id='APP-ID'),
-    client_ip='CLIENT-ID'
+    channel='alipay',
+    client_ip='127.0.0.1',
+    app=dict(id='app_1Gqj58ynP0mHeX1q')
 )
-
 print ch

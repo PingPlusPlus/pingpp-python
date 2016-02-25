@@ -220,7 +220,12 @@ class APIRequestor(object):
         }
 
         if method == 'post':
-            headers['Content-Type'] = 'application/x-www-form-urlencoded'
+            headers['Content-Type'] = 'application/json'
+            post_data = util.json.dumps(params)
+
+            from pingpp import private_key_path
+            if private_key_path is not None:
+                headers['Pingplusplus-Signature'] = self.rsa_sign(private_key_path, post_data)
 
         if api_version is not None:
             headers['Pingplusplus-Version'] = api_version
@@ -355,3 +360,17 @@ class APIRequestor(object):
     def handle_urllib2_error(self, err, abs_url):
         from pingpp.http_client import Urllib2Client
         return self._deprecated_handle_error(Urllib2Client, err)
+
+    def rsa_sign(self, private_key_path, data):
+        from Crypto.PublicKey import RSA
+        from Crypto.Signature import PKCS1_v1_5
+        from Crypto.Hash import SHA256
+        from base64 import b64encode
+
+        key = open(private_key_path, "r").read()
+        rsa_key = RSA.importKey(key)
+        signer = PKCS1_v1_5.new(rsa_key)
+        digest = SHA256.new(data)
+        sign = signer.sign(digest)
+
+        return b64encode(sign)

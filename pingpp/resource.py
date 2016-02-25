@@ -335,3 +335,13 @@ class Refund(UpdateableAPIResource):
         raise NotImplementedError(
             "Can't retrieve a refund without a charge ID. "
             "Use charge.refunds.retrieve('refund_id') instead.")
+
+class Transfer(CreateableAPIResource):
+    pass
+
+class RedEnvelope(CreateableAPIResource):
+
+    @classmethod
+    def class_name(self):
+        return 'red_envelope'
+
