@@ -2,6 +2,7 @@
 import pingpp
 import random
 pingpp.api_key = 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
+pingpp.private_key_path = 'your_rsa_private_key.pem'
 
 orderno = random.randint(10000000, 99999999999)
 

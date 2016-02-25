@@ -6,6 +6,7 @@ import string
 
 
 pingpp.api_key = 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
+pingpp.private_key_path = 'your_rsa_private_key.pem'
 
 orderno = ''.join(random.sample(string.ascii_letters + string.digits, 8))
 tr = pingpp.Transfer.create(

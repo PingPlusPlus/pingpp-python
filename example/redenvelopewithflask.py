@@ -28,6 +28,8 @@ def do_redenvelope():
     print params
 
     pingpp.api_key = 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
+    pingpp.private_key_path = 'your_rsa_private_key.pem'
+
     response_redenvelope = pingpp.RedEnvelope.create(api_key=pingpp.api_key, **params)
     print 'Response_redenvelope: ' + str(response_redenvelope)
     return Response(json.dumps(response_redenvelope), mimetype='application/json,charset=UTF-8')
