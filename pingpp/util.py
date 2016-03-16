@@ -32,8 +32,7 @@ if not (json and hasattr(json, 'loads')):
                 "Ping++ requires a JSON library, such as simplejson. "
                 "HINT: Try installing the "
                 "python simplejson library via 'pip install simplejson' or "
-                "'easy_install simplejson', or contact support@pingxx.com "
-                "with questions.")
+                "'easy_install simplejson'.")
         else:
             raise ImportError(
                 "Ping++ requires a JSON library with the same interface as "
@@ -41,8 +40,7 @@ if not (json and hasattr(json, 'loads')):
                 "library with a different interface.  Please install "
                 "the simplejson library.  HINT: Try installing the "
                 "python simplejson library via 'pip install simplejson' "
-                "or 'easy_install simplejson', or contact support@pingxx.com"
-                "with questions.")
+                "or 'easy_install simplejson'.")
 
 
 def utf8(value):

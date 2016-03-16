@@ -18,9 +18,7 @@ except ImportError:
             'We were unable to import the ssl module due to a bug in the '
             'Google App Engine development server. For more details and '
             'suggested resolutions see: '
-            'https://code.google.com/p/googleappengine/issues/detail?id=9246.'
-            'Please alert us immediately at support@pingxx.com if this '
-            'message appears in your production logs.')
+            'https://code.google.com/p/googleappengine/issues/detail?id=9246.')
     raise
 
 
@@ -79,9 +77,7 @@ class APIRequestor(object):
     def api_url(cls, url=''):
         warnings.warn(
             'The `api_url` class method of APIRequestor is '
-            'deprecated and will be removed in version 2.0.'
-            'If you need public access to this function, please email us '
-            'at support@pingxx.com.',
+            'deprecated and will be removed.',
             DeprecationWarning)
         return '%s%s' % (pingpp.api_base, url)
 
@@ -89,9 +85,7 @@ class APIRequestor(object):
     def _deprecated_encode(cls, stk, key, value):
         warnings.warn(
             'The encode_* class methods of APIRequestor are deprecated and '
-            'will be removed in version 2.0. '
-            'If you need public access to this function, please email us '
-            'at support@pingxx.com.',
+            'will be removed.',
             DeprecationWarning, stacklevel=2)
         stk.extend(_api_encode({key: value}))
 
@@ -118,9 +112,7 @@ class APIRequestor(object):
         """
         warnings.warn(
             'The `encode` class method of APIRequestor is deprecated and '
-            'will be removed in version 2.0.'
-            'If you need public access to this function, please email us '
-            'at support@pingxx.com.',
+            'will be removed.',
             DeprecationWarning)
         return urllib.urlencode(list(_api_encode(d)))
 
@@ -128,9 +120,7 @@ class APIRequestor(object):
     def build_url(cls, url, params):
         warnings.warn(
             'The `build_url` class method of APIRequestor is deprecated and '
-            'will be removed in version 2.0.'
-            'If you need public access to this function, please email us '
-            'at support@pingxx.com.',
+            'will be removed.',
             DeprecationWarning)
         return _build_api_url(url, cls.encode(params))
 
@@ -182,8 +172,7 @@ class APIRequestor(object):
                 'No API key provided. (HINT: set your API key using '
                 '"pingpp.api_key = <API-KEY>"). You can generate API keys '
                 'from the Ping++ web interface.  See https://pingxx.com '
-                'for details, or email support@pingxx.com if you have any '
-                'questions.')
+                'for details.')
 
         abs_url = '%s%s' % (pingpp.api_base, url)
 
@@ -198,8 +187,7 @@ class APIRequestor(object):
         else:
             raise error.APIConnectionError(
                 'Unrecognized HTTP method %r.  This may indicate a bug in the '
-                'Ping++ bindings.  Please contact support@pingxx.com for '
-                'assistance.' % (method,))
+                'Ping++ bindings. ' % (method,))
 
         ua = {
             'bindings_version': version.VERSION,
@@ -285,9 +273,7 @@ class APIRequestor(object):
                     warnings.warn(
                         'We were unable to verify Ping++\'s SSL certificate '
                         'due to a bug in the Google App Engine development '
-                        'server. Please alert us immediately at '
-                        'support@pingxx.com if this message appears in your '
-                        'production logs.')
+                        'server.')
                     return
                 else:
                     raise
@@ -312,8 +298,7 @@ class APIRequestor(object):
         else:
             raise error.APIConnectionError(
                 'Unrecognized HTTP method %r.  This may indicate a bug in the '
-                'Ping++ bindings.  Please contact support@pingxx.com for '
-                'assistance.' % (method,))
+                'Ping++ bindings. ' % (method,))
 
         client = impl(verify_ssl_certs=self._client._verify_ssl_certs)
         return client.request(method, url, headers, post_data)
