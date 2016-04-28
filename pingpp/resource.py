@@ -146,7 +146,7 @@ class PingppObject(dict):
             return unicode_repr
 
     def __str__(self):
-        return util.json.dumps(self, sort_keys=False, indent=2)
+        return util.json.dumps(self, ensure_ascii=False, sort_keys=False, indent=2)
 
     def to_dict(self):
         warnings.warn(

@@ -183,7 +183,7 @@ class APIRequestor(object):
                 abs_url = _build_api_url(abs_url, encoded_params)
             post_data = None
         elif method == 'post':
-            post_data = util.json.dumps(params)
+            post_data = util.json.dumps(params).encode("utf-8")
         else:
             raise error.APIConnectionError(
                 'Unrecognized HTTP method %r.  This may indicate a bug in the '
