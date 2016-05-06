@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 import sys
 import warnings
@@ -19,8 +21,7 @@ install_requires = []
 
 if sys.version_info < (2, 6):
     warnings.warn(
-        'Python 2.5 is not officially supported by Ping++. '
-        'If you have any questions, please contact us at support@pingxx.com.',
+        'Python 2.5 is not officially supported by Ping++. ',
         DeprecationWarning)
     install_requires.append('requests >= 0.8.8, < 0.10.1')
     install_requires.append('ssl')
@@ -30,12 +31,12 @@ else:
 
 # Don't import pingpp module here, since deps may not be installed
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'pingpp'))
-from version import VERSION
+from version import VERSION  # noqa
 
 # Get simplejson if we don't already have json
 if sys.version_info < (3, 0):
     try:
-        from util import json
+        from util import json  # noqa
     except ImportError:
         install_requires.append('simplejson')
 

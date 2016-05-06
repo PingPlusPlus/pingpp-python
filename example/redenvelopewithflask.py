@@ -1,10 +1,9 @@
-__author__ = 'Lian'
+# -*- coding: utf-8 -*-
 
 import pingpp
-from flask import Flask,request,Response
+from flask import Flask, request, Response
 import json
 import random
-import string
 
 app = Flask(__name__)
 
@@ -30,9 +29,11 @@ def do_redenvelope():
     pingpp.api_key = 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
     pingpp.private_key_path = 'your_rsa_private_key.pem'
 
-    response_redenvelope = pingpp.RedEnvelope.create(api_key=pingpp.api_key, **params)
+    response_redenvelope = pingpp.RedEnvelope.create(api_key=pingpp.api_key,
+                                                     **params)
     print 'Response_redenvelope: ' + str(response_redenvelope)
-    return Response(json.dumps(response_redenvelope), mimetype='application/json,charset=UTF-8')
+    return Response(json.dumps(response_redenvelope),
+                    mimetype='application/json,charset=UTF-8')
 
 if __name__ == '__main__':
     app.run(debug=True, port=8888, host='0.0.0.0')

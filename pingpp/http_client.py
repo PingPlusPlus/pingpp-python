@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 import sys
 import textwrap
@@ -99,7 +101,7 @@ class RequestsClient(HTTPClient):
                                           data=post_data,
                                           timeout=80,
                                           **kwargs)
-            except TypeError, e:
+            except TypeError as e:
                 raise TypeError(
                     'Warning: It looks like your installed version of the '
                     '"requests" library is not compatible with Ping++\'s '
@@ -113,7 +115,7 @@ class RequestsClient(HTTPClient):
             # are susceptible to the same and should be updated.
             content = result.content
             status_code = result.status_code
-        except Exception, e:
+        except Exception as e:
             # Would catch just requests.exceptions.RequestException, but can
             # also raise ValueError, RuntimeError, etc.
             self._handle_request_error(e)
@@ -154,7 +156,7 @@ class UrlFetchClient(HTTPClient):
                 deadline=55,
                 payload=post_data
             )
-        except urlfetch.Error, e:
+        except urlfetch.Error as e:
             self._handle_request_error(e, url)
 
         return result.content, result.status_code
@@ -167,7 +169,8 @@ class UrlFetchClient(HTTPClient):
         elif isinstance(e, urlfetch.DownloadError):
             msg = "There was a problem retrieving data from Ping++."
         elif isinstance(e, urlfetch.ResponseTooLargeError):
-            msg = ("There was a problem receiving all of your data from Ping++.")
+            msg = ("There was a problem receiving all of your data "
+                   "from Ping++.")
         else:
             msg = ("Unexpected error communicating with Ping++.")
 
@@ -207,7 +210,7 @@ class PycurlClient(HTTPClient):
 
         try:
             curl.perform()
-        except pycurl.error, e:
+        except pycurl.error as e:
             self._handle_request_error(e)
         rbody = s.getvalue()
         rcode = curl.getinfo(pycurl.RESPONSE_CODE)
@@ -251,10 +254,10 @@ class Urllib2Client(HTTPClient):
             response = urllib2.urlopen(req)
             rbody = response.read()
             rcode = response.code
-        except urllib2.HTTPError, e:
+        except urllib2.HTTPError as e:
             rcode = e.code
             rbody = e.read()
-        except (urllib2.URLError, ValueError), e:
+        except (urllib2.URLError, ValueError) as e:
             self._handle_request_error(e)
         return rbody, rcode
 

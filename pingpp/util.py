@@ -1,22 +1,18 @@
+# -*- coding: utf-8 -*-
+
 import logging
 import sys
 import os
 
 logger = logging.getLogger('pingpp')
 
-__all__ = ['StringIO', 'parse_qsl', 'json', 'utf8']
+__all__ = ['StringIO', 'json', 'utf8']
 
 try:
     # When cStringIO is available
     import cStringIO as StringIO
 except ImportError:
     import StringIO
-
-try:
-    from urlparse import parse_qsl
-except ImportError:
-    # Python < 2.6
-    from cgi import parse_qsl
 
 try:
     import json

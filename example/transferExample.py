@@ -1,5 +1,5 @@
-
 #!/usr/bin/env python
+
 import pingpp
 import random
 import string
@@ -20,4 +20,4 @@ tr = pingpp.Transfer.create(
     extra=dict(user_name='User Name', force_check=True),
     description='description'
 )
-print tr
+print(tr)

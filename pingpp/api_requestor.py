@@ -1,25 +1,15 @@
+# -*- coding: utf-8 -*-
+
 import calendar
 import datetime
 import platform
 import time
-import socket
 import urllib
 import urlparse
 import warnings
 
 import pingpp
-from pingpp import error, http_client, version, util, certificate_blacklist
-
-try:
-    import ssl
-except ImportError:
-    if util.is_appengine_dev():
-        warnings.warn(
-            'We were unable to import the ssl module due to a bug in the '
-            'Google App Engine development server. For more details and '
-            'suggested resolutions see: '
-            'https://code.google.com/p/googleappengine/issues/detail?id=9246.')
-    raise
+from pingpp import error, http_client, version, util
 
 
 def _encode_datetime(dttime):
@@ -62,8 +52,6 @@ def _build_api_url(url, query):
 
 
 class APIRequestor(object):
-
-    _CERTIFICATE_VERIFIED = False
 
     def __init__(self, key=None, client=None):
         self.api_key = key
@@ -125,7 +113,6 @@ class APIRequestor(object):
         return _build_api_url(url, cls.encode(params))
 
     def request(self, method, url, params=None):
-        self._check_ssl_cert()
         rbody, rcode, my_api_key = self.request_raw(
             method.lower(), url, params)
         resp = self.interpret_response(rbody, rcode)
@@ -147,8 +134,9 @@ class APIRequestor(object):
             raise error.AuthenticationError(
                 err.get('message'), rbody, rcode, resp)
         elif rcode == 402:
-            raise error.ChannelError(err.get('message'), err.get('param'),
-                                  err.get('code'), rbody, rcode, resp)
+            raise error.ChannelError(
+                err.get('message'), err.get('param'),
+                err.get('code'), rbody, rcode, resp)
         else:
             raise error.APIError(err.get('message'), rbody, rcode, resp)
 
@@ -200,13 +188,14 @@ class APIRequestor(object):
                            ['uname', lambda: ' '.join(platform.uname())]]:
             try:
                 val = func()
-            except Exception, e:
+            except Exception as e:
                 val = "!! %s" % (e,)
             ua[attr] = val
 
         headers = {
             'X-Pingpp-Client-User-Agent': util.json.dumps(ua),
-            'User-Agent': 'Pingplusplus/v1 PythonBindings/%s' % (version.VERSION,),
+            'User-Agent':
+                'Pingplusplus/v1 PythonBindings/%s' % (version.VERSION,),
             'Authorization': 'Bearer %s' % (my_api_key,),
             'Accept-Language': my_accept_language
         }
@@ -216,7 +205,8 @@ class APIRequestor(object):
 
             from pingpp import private_key_path
             if private_key_path is not None:
-                headers['Pingplusplus-Signature'] = self.rsa_sign(private_key_path, post_data)
+                headers['Pingplusplus-Signature'] = self.rsa_sign(
+                    private_key_path, post_data)
 
         if api_version is not None:
             headers['Pingplusplus-Version'] = api_version
@@ -243,41 +233,6 @@ class APIRequestor(object):
         if not (200 <= rcode < 300):
             self.handle_api_error(rbody, rcode, resp)
         return resp
-
-    def _check_ssl_cert(self):
-        """Preflight the SSL certificate presented by the backend.
-
-        This isn't 100% bulletproof, in that we're not actually validating the
-        transport used to communicate with Ping++, merely that the first
-        attempt to does not use a revoked certificate.
-
-        Unfortunately the interface to OpenSSL doesn't make it easy to check
-        the certificate before sending potentially sensitive data on the wire.
-        This approach raises the bar for an attacker significantly."""
-
-        from pingpp import verify_ssl_certs
-
-        if verify_ssl_certs and not self._CERTIFICATE_VERIFIED:
-            uri = urlparse.urlparse(pingpp.api_base)
-            try:
-                certificate = ssl.get_server_certificate(
-                    (uri.hostname, uri.port or 443), ssl_version=3)
-                der_cert = ssl.PEM_cert_to_DER_cert(certificate)
-            except socket.error, e:
-                raise error.APIConnectionError(e)
-            except TypeError:
-                # The Google App Engine development server blocks the C socket
-                # module which causes a type error when using the SSL library
-                if util.is_appengine_dev():
-                    self._CERTIFICATE_VERIFIED = True
-                    warnings.warn(
-                        'We were unable to verify Ping++\'s SSL certificate '
-                        'due to a bug in the Google App Engine development '
-                        'server.')
-                    return
-                else:
-                    raise
-            self._CERTIFICATE_VERIFIED = certificate_blacklist.verify(der_cert)
 
     # Deprecated request handling.  Will all be removed in 2.0
     def _deprecated_request(self, impl, method, url, headers, params):

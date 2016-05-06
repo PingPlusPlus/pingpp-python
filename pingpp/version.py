@@ -1,1 +1,3 @@
-VERSION = '2.0.9'
+# -*- coding: utf-8 -*-
+
+VERSION = '2.0.10'

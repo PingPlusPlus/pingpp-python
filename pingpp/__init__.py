@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Ping++ Python
 # Configurations
 
@@ -7,22 +8,34 @@ verify_ssl_certs = True
 accept_language = None
 private_key_path = None
 
-from pingpp.error import (
-    PingppError, APIError, APIConnectionError, AuthenticationError, ChannelError,
+from pingpp.error import (  # noqa
+    PingppError,
+    APIError,
+    APIConnectionError,
+    AuthenticationError,
+    ChannelError,
     InvalidRequestError)
 
-from pingpp.resource import Charge
-from pingpp.resource import RedEnvelope
-from pingpp.resource import Event
-from pingpp.resource import Transfer
+from pingpp.resource import (  # noqa
+    Charge,
+    RedEnvelope,
+    Event,
+    Transfer)
 
-from pingpp.version import VERSION
-from pingpp.api_requestor import APIRequestor
-from pingpp.resource import (
-    convert_to_pingpp_object, PingppObject, PingppObjectEncoder,
-    APIResource, ListObject, SingletonAPIResource, ListableAPIResource,
-    CreateableAPIResource, UpdateableAPIResource, DeletableAPIResource)
-
-from pingpp.wxpub_oauth import WxpubOauth
+from pingpp.version import VERSION  # noqa
+from pingpp.api_requestor import APIRequestor  # noqa
+from pingpp.resource import (  # noqa
+    convert_to_pingpp_object,
+    PingppObject,
+    PingppObjectEncoder,
+    APIResource,
+    ListObject,
+    SingletonAPIResource,
+    ListableAPIResource,
+    CreateableAPIResource,
+    UpdateableAPIResource,
+    DeletableAPIResource)
+from pingpp.util import json, logger  # noqa
+from pingpp.wxpub_oauth import WxpubOauth  # noqa
 
 api_version = VERSION

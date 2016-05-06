@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import urllib
 import warnings
 import sys
@@ -22,6 +24,7 @@ def convert_to_pingpp_object(resp, api_key):
         return klass.construct_from(resp, api_key)
     else:
         return resp
+
 
 class PingppObject(dict):
     def __init__(self, id=None, api_key=None, **params):
@@ -50,7 +53,7 @@ class PingppObject(dict):
 
         try:
             return self[k]
-        except KeyError, err:
+        except KeyError as err:
             raise AttributeError(*err.args)
 
     def __setitem__(self, k, v):
@@ -72,7 +75,7 @@ class PingppObject(dict):
     def __getitem__(self, k):
         try:
             return super(PingppObject, self).__getitem__(k)
-        except KeyError, err:
+        except KeyError as err:
             if k in self._transient_values:
                 raise KeyError(
                     "%r.  HINT: The %r attribute was set in the past."
@@ -128,17 +131,7 @@ class PingppObject(dict):
         return convert_to_pingpp_object(response, api_key)
 
     def __repr__(self):
-        ident_parts = [type(self).__name__]
-
-        if isinstance(self.get('object'), basestring):
-            ident_parts.append(self.get('object'))
-
-        if isinstance(self.get('id'), basestring):
-            ident_parts.append('id=%s' % (self.get('id'),))
-
-        # unicode_repr = '<%s at %s> JSON: %s' % (
-        #     ' '.join(ident_parts), hex(id(self)), str(self))
-        unicode_repr = str(self)
+        unicode_repr = self.to_str()
 
         if sys.version_info[0] < 3:
             return unicode_repr.encode('utf-8')
@@ -146,7 +139,14 @@ class PingppObject(dict):
             return unicode_repr
 
     def __str__(self):
-        return util.json.dumps(self, ensure_ascii=False, sort_keys=False, indent=2)
+        return util.json.dumps(
+            self, ensure_ascii=True,
+            sort_keys=True, indent=2)
+
+    def to_str(self):
+        return util.json.dumps(
+            self, ensure_ascii=False,
+            sort_keys=True, indent=2)
 
     def to_dict(self):
         warnings.warn(
@@ -315,6 +315,7 @@ class DeletableAPIResource(APIResource):
         self.refresh_from(self.request('delete', self.instance_url(), params))
         return self
 
+
 class Charge(CreateableAPIResource, ListableAPIResource,
              UpdateableAPIResource):
     def refund(self, **params):
@@ -322,18 +323,22 @@ class Charge(CreateableAPIResource, ListableAPIResource,
         self.refresh_from(self.request('post', url, params))
         return self
 
+
 class RedEnvelope(CreateableAPIResource, ListableAPIResource,
-             UpdateableAPIResource):
+                  UpdateableAPIResource):
     @classmethod
     def class_name(cls):
         return 'red_envelope'
 
+
 class Event(ListableAPIResource):
     pass
 
+
 class Transfer(CreateableAPIResource, ListableAPIResource,
-             UpdateableAPIResource):
+               UpdateableAPIResource):
     pass
+
 
 class Refund(UpdateableAPIResource):
 
