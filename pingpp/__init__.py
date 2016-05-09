@@ -7,6 +7,7 @@ api_base = 'https://api.pingxx.com'
 verify_ssl_certs = True
 accept_language = None
 private_key_path = None
+private_key = None
 
 from pingpp.error import (  # noqa
     PingppError,
