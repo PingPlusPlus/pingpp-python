@@ -19,14 +19,17 @@ pingpp.private_key_path = os.path.join(
 # -----END RSA PRIVATE KEY-----'''
 
 orderno = ''.join(random.sample(string.ascii_letters + string.digits, 8))
-ch = pingpp.Charge.create(
-    subject='Your Subject',
-    body='Your Body',
-    amount=100,
-    order_no=orderno,
-    currency='cny',
-    channel='alipay',
-    client_ip='192.168.0.9',
-    app=dict(id=app_id)
-)
-print(ch.to_str())
+try:
+    ch = pingpp.Charge.create(
+        subject='Your Subject',
+        body='Your Body',
+        amount=100,
+        order_no=orderno,
+        currency='cny',
+        channel='alipay',
+        client_ip='192.168.0.9',
+        app=dict(id=app_id)
+    )
+    print(ch.to_str())
+except Exception as e:
+    print(e.message)
