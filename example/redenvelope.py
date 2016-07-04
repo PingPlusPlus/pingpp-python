@@ -24,21 +24,21 @@ pingpp.api_key = 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
 pingpp.private_key_path = os.path.join(os.path.dirname(__file__),
                                        'your_rsa_private_key.pem')
 
-orderno = random.randint(10000000, 99999999999) # 红包使用的商户订单号。wx(新渠道)、wx_pub 规定为 1 ~ 28 位不能重复的数字
+orderno = random.randint(10000000, 99999999999)  # 红包使用的商户订单号。wx(新渠道)、wx_pub 规定为 1 ~ 28 位不能重复的数字
 
 redenvelope = pingpp.RedEnvelope.create(
     order_no=orderno,
-    channel='wx_pub',# 目前支持 wx(新渠道)、 wx_pub
-    amount=100,# 订单总金额, 人民币单位：分（如订单总金额为 1 元，此处请填 100，金额限制在 100 ~ 20000 之间，即 1 ~ 200 元）
+    channel='wx_pub',  # 目前支持 wx(新渠道)、 wx_pub
+    amount=100,  # 订单总金额, 人民币单位：分（如订单总金额为 1 元，此处请填 100，金额限制在 100 ~ 20000 之间，即 1 ~ 200 元）
     subject='Your Subject',
     body='Your Body',
     currency='cny',
-    app=dict(id='app_1Gqj58ynP0mHeX1q'),# app_id 获取方式：登录 [Dashboard](https://dashboard.pingxx.com)->点击你创建的应用->应用首页->应用 ID(App ID)
-    extra=dict(send_name='Send Name'),# 商户名称，最多 32 个字节
-    recipient='Openid',# 接收者 id， 为用户在 wx(新渠道)、wx_pub 下的 open_id
+    app=dict(id='app_1Gqj58ynP0mHeX1q'),  # app_id 获取方式：登录 [Dashboard](https://dashboard.pingxx.com)->点击你创建的应用->应用首页->应用 ID(App ID)
+    extra=dict(send_name='Send Name'),  # 商户名称，最多 32 个字节
+    recipient='Openid',  # 接收者 id， 为用户在 wx(新渠道)、wx_pub 下的 open_id
     description='Your Description'
 )
-print(redenvelope)# 输出 Ping++ 返回的红包对象 Red_envelope
+print(redenvelope)  # 输出 Ping++ 返回的红包对象 Red_envelope
 
 
 reds = pingpp.RedEnvelope.all()

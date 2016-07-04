@@ -12,4 +12,4 @@ import pingpp
 pingpp.api_key = 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
 # 通过 Charge 对象的 id 查询一个已创建的 Charge 对象
 ch = pingpp.Charge.retrieve('ch_a9CmfHTGGaz1urHiL8m5OiX1')
-print(ch) # 输出 Ping++ 返回 Charge 对象
+print(ch)  # 输出 Ping++ 返回 Charge 对象

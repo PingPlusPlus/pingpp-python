@@ -19,6 +19,8 @@ import os
   pub_key_path：读取你保存的 Ping++ 公钥的路径；
   pingpp_public_key.pem：Ping++ 公钥，获取路径：登录 [Dashboard](https://dashboard.pingxx.com)->点击管理平台右上角公司名称->开发信息-> Ping++ 公钥
 '''
+
+
 def decode_base64(data):
     remainder = len(data) % 4
     if remainder:

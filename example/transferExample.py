@@ -21,21 +21,23 @@ pingpp.api_key = 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
 '''
 pingpp.private_key_path = 'your_rsa_private_key.pem'
 
+
 # 企业转账使用的商户内部订单号。wx(新渠道)、wx_pub 规定为 1 ~ 50 位不能重复的数字字母组合
 orderno = ''.join(random.sample(string.ascii_letters + string.digits, 8))
+'''
+extra 字段说明:
+    user_name: 收款人姓名。当该参数为空，则不校验收款人姓名，选填;
+    force_check: 是否强制校验收款人姓名。仅当 user_name 参数不为空时该参数生效，选填
+'''
 tr = pingpp.Transfer.create(
     order_no=orderno,
-    channel='wx_pub',# 目前支持 wx(新渠道)、 wx_pub
-    amount=100,# 订单总金额, 人民币单位：分（如订单总金额为 1 元，此处请填 100,企业付款最小发送金额为 1 元）
+    channel='wx_pub',  # 目前支持 wx(新渠道)、 wx_pub
+    amount=100,  # 订单总金额, 人民币单位：分（如订单总金额为 1 元，此处请填 100,企业付款最小发送金额为 1 元）
     currency='cny',
-    app=dict(id='app_1Gqj58ynP0mHeX1q'),# app_id 获取方式：登录 [Dashboard](https://dashboard.pingxx.com)->点击你创建的应用->应用首页->应用 ID(App ID)
-    type='b2c',# 付款类型，当前仅支持 b2c 企业付款
-    recipient='youropenid',# 接收者 id， 为用户在 wx(新渠道)、wx_pub 下的 open_id
-    '''
-    user_name：收款人姓名。当该参数为空，则不校验收款人姓名，选填;
-    force_check：是否强制校验收款人姓名。仅当 user_name 参数不为空时该参数生效，选填
-    '''
+    app=dict(id='app_1Gqj58ynP0mHeX1q'),  # app_id 获取方式：登录 [Dashboard](https://dashboard.pingxx.com)->点击你创建的应用->应用首页->应用 ID(App ID)
+    type='b2c',  # 付款类型，当前仅支持 b2c 企业付款
+    recipient='youropenid',  # 接收者 id， 为用户在 wx(新渠道)、wx_pub 下的 open_id
     extra=dict(user_name='User Name', force_check=True),
     description='description'
 )
-print(tr)# // 输出 Ping++ 返回的企业付款对象 Transfer
+print(tr)  # // 输出 Ping++ 返回的企业付款对象 Transfer

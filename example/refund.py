@@ -12,8 +12,8 @@ import pingpp
 pingpp.api_key = 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
 
 # 通过发起一次退款请求创建一个新的 refund 对象，只能对已经发生交易并且没有全额退款的 charge 对象发起退款
-ch = pingpp.Charge.retrieve("ch_a9CmfHTGGaz1urHiL8m5OiX1") # Charge 对象的 id
+ch = pingpp.Charge.retrieve("ch_a9CmfHTGGaz1urHiL8m5OiX1")  # Charge 对象的 id
 # amount 为退款的金额, 单位为对应币种的最小货币单位，例如：人民币为分（如退款金额为 1 元，此处请填 100）。必须小于等于可退款金额，默认为全额退款
 re = ch.refunds.create(description='Your Descripton', amount=1)
 
-print(re) # 输出 Ping++ 返回的退款对象 Refund
+print(re)  # 输出 Ping++ 返回的退款对象 Refund
