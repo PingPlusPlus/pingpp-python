@@ -1,8 +1,8 @@
 # Pingpp Python SDK
-----------
+---
 
 ## 简介
-pingpp 文件夹下是 Python SDK 文件，<br>
+pingpp 文件夹下是 Python SDK 文件，  
 example 文件夹里面是简单的接入示例，该示例仅供参考。
 
 ## 安装
@@ -18,7 +18,7 @@ python setup.py install
 
 ### 初始化
 ```python
-pingpp.api_key = 'APP-KEY'
+pingpp.api_key = 'YOUR_KEY'
 ```
 
 ### 设置请求签名密钥
@@ -37,15 +37,14 @@ ch = pingpp.Charge.create(
     subject='test-subject',
     body='test-body',
     currency='cny',
-    app=dict(id='YOUR-APP-ID'),
+    app=dict(id='APP_ID'),
     client_ip='127.0.0.1'
-
 )
 ```
 
 ### 查询
 ```python
-pingpp.Charge.retrieve('CHARGE-ID')
+pingpp.Charge.retrieve('CHARGE_ID')
 ```
 
 ```python
@@ -54,38 +53,52 @@ pingpp.Charge.all()
 
 ### 退款
 ``` python
-ch = pingpp.Charge.retrieve('CHARGE-ID')
-re = ch.refunds.create()
+ch = pingpp.Charge.retrieve('CHARGE_ID')
+re = ch.refunds.create(
+    amount=1,
+    description='Refund Description'
+)
 ```
 
 ### 退款查询
-
 ```python
-ch = pingpp.Charge.retrieve('CHARGE-ID')
-re = ch.refunds.retrieve('REFUND-ID')
+ch = pingpp.Charge.retrieve('CHARGE_ID')
+re = ch.refunds.retrieve('REFUND_ID')
 ```
 
 ```python
-ch = pingpp.Charge.retrieve('CHARGE-ID')
-re = ch.refunds.retrieve('REFUND-ID')
+ch = pingpp.Charge.retrieve('CHARGE_ID')
+res = ch.refunds.all(limit=3)
 ```
 
 ### 微信红包
 ```python
-pingpp.RedEnvelope.create()
+pingpp.RedEnvelope.create(
+    order_no='123456789',
+    channel='wx_pub',
+    amount=100,
+    subject='Your Subject',
+    body='Your Body',
+    currency='cny',
+    app=dict(id='APP_ID'),
+    extra=dict(send_name='Send Name'),
+    recipient='User Openid',
+    description='Your Description'
+)
 ```
 
 ### 查询
 ```python
-pingpp.RedEnvelope.retrieve('RED-ID')
+pingpp.RedEnvelope.retrieve('RED_ID')
 ```
 
 ```python
 pingpp.RedEnvelope.all()
 ```
+
 ### 查询 event
 ```python
-pingpp.Event.retrieve('RED-ID')
+pingpp.Event.retrieve('EVENT_ID')
 ```
 
 ## 查询 event 列表
@@ -101,17 +114,17 @@ tr = pingpp.Transfer.create(
     channel='wx_pub',
     amount=100,
     currency='cny',
-    app=dict(id='YOUR-APP-ID'),
+    app=dict(id='APP_ID'),
     type='b2c',
-    recipient='youropenid',
-    extra=dict(user_name='User Name', force_check=True),
-    description='description'
+    recipient='User Openid',
+    extra=dict(user_name='User Name', force_check=False),
+    description='Your Description'
 )
 ```
 
 ### 查询
 ```python
-pingpp.Transfer.retrieve('TR-ID')
+pingpp.Transfer.retrieve('TRANSFER_ID')
 ```
 
 ```python
