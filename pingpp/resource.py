@@ -355,3 +355,13 @@ class Refund(UpdateableAPIResource):
         raise NotImplementedError(
             "Can't retrieve a refund without a charge ID. "
             "Use charge.refunds.retrieve('refund_id') instead.")
+
+
+class Customs(CreateableAPIResource):
+    @classmethod
+    def class_url(cls):
+        cls_name = cls.class_name()
+        return "/v1/%s" % (cls_name,)
+
+    def instance_url(self):
+        return self.class_url()

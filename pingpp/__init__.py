@@ -21,7 +21,8 @@ from pingpp.resource import (  # noqa
     Charge,
     RedEnvelope,
     Event,
-    Transfer)
+    Transfer,
+    Customs)
 
 from pingpp.version import VERSION  # noqa
 from pingpp.api_requestor import APIRequestor  # noqa

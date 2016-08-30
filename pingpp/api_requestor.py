@@ -170,7 +170,7 @@ class APIRequestor(object):
             if params:
                 abs_url = _build_api_url(abs_url, encoded_params)
             post_data = None
-        elif method == 'post':
+        elif method == 'post' or method == 'put':
             post_data = util.json.dumps(params).encode("utf-8")
         else:
             raise error.APIConnectionError(
@@ -200,7 +200,7 @@ class APIRequestor(object):
             'Accept-Language': my_accept_language
         }
 
-        if method == 'post':
+        if method == 'post' or method == 'put':
             headers['Content-Type'] = 'application/json;charset=UTF-8'
 
             privkey = self.get_private_key()
@@ -248,7 +248,7 @@ class APIRequestor(object):
             if params:
                 url = self.build_url(url, params)
             post_data = None
-        elif method == 'post':
+        elif method == 'post' or method == 'put':
             post_data = self.encode(params)
         else:
             raise error.APIConnectionError(
