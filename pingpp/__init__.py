@@ -8,6 +8,7 @@ verify_ssl_certs = True
 accept_language = None
 private_key_path = None
 private_key = None
+app_id = None
 
 from pingpp.error import (  # noqa
     PingppError,
@@ -22,7 +23,11 @@ from pingpp.resource import (  # noqa
     RedEnvelope,
     Event,
     Transfer,
-    Customs)
+    Customs,
+    BatchRefund,
+    BatchTransfer,
+    Identification,
+    )
 
 from pingpp.version import VERSION  # noqa
 from pingpp.api_requestor import APIRequestor  # noqa

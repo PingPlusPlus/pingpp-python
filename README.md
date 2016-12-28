@@ -101,11 +101,6 @@ pingpp.RedEnvelope.all()
 pingpp.Event.retrieve('EVENT_ID')
 ```
 
-## 查询 event 列表
-```python
-pingpp.Event.all()
-```
-
 ### 微信企业付款
 
 ```python
@@ -129,6 +124,91 @@ pingpp.Transfer.retrieve('TRANSFER_ID')
 
 ```python
 pingpp.Transfer.all()
+```
+
+## Batch Refunds 批量退款
+### 创建 Batch refund 对象
+```python
+pingpp.BatchRefund.create（
+    "app": app_id,
+    "batch_no": "batchrefund20160801001",
+    "description": "Batch refund description.",
+    "charges": [
+        "ch_L8qn10mLmr1GS8e5OODmHaL4",
+        "ch_fdOmHaLmLmr1GOD4qn1dS8e5"
+    ]
+)
+```
+
+### 查询 Batch refund 对象
+```python
+pingpp.BatchRefund.retrieve("batchrefund20160801001")
+```
+
+### 查询 Batch refund 对象列表
+```python
+pingpp.BatchRefund.list()
+```
+## Batch Transfers 批量企业付款
+### 创建批量付款
+```python
+req_params = {
+    "app": app_id,
+    "batch_no": "batchrefund20160801001",
+    "description": "Batch refund description.",
+    "charges": [
+        "ch_L8qn10mLmr1GS8e5OODmHaL4",
+        "ch_fdOmHaLmLmr1GOD4qn1dS8e5"
+    ]
+}
+pingpp.BatchTransfer.create(**req_params)
+```
+
+### 查询批量付款
+```python
+pingpp.BatchTransfer.retrieve('BATCH_0001')
+```
+
+### 查询批量付款列表
+```python
+pingpp.BatchTransfer.list()
+```
+
+### 更新批量付款对象 (仅unionpay渠道支持)
+```python
+pingpp.BatchTransfer.cancel('BATCH_0001')
+```
+
+## 身份证银行卡信息认证接口
+```python
+params = {
+    "app": "APP_ID",
+    "data": {
+        "id_name": "张三",
+        "id_number": "320291198811110000",
+        "card_number": "6201111122223333"
+    },
+    "type": "bank_card"
+}
+pingpp.Identification.create(**params)
+```
+
+## 报关接口
+### 请求报关接口
+```python
+pingpp.Customs.create(
+    app='App ID',
+    charge='Charge ID',
+    channel='alipay',
+    amount=100,  # 报关金额, 人民币单位：分
+    customs_code='GUANGZHOU',
+    trade_no='15112496832609'
+)
+```
+
+### 查询报关接口
+```python
+pingpp.Customs.retrieve("14201607013878045463")
 ```
 
 **详细信息请参考 [API 文档](https://pingxx.com/document/api?python)。**

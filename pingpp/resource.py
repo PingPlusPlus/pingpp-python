@@ -10,7 +10,9 @@ from pingpp import api_requestor, error, util
 def convert_to_pingpp_object(resp, api_key):
     types = {'charge': Charge, 'list': ListObject,
              'refund': Refund, 'red_envelope': RedEnvelope,
-             'event': Event, 'transfer': Transfer}
+             'event': Event, 'transfer': Transfer,
+             'Identification': Identification
+             }
 
     if isinstance(resp, list):
         return [convert_to_pingpp_object(i, api_key) for i in resp]
@@ -217,6 +219,8 @@ class ListObject(PingppObject):
         return self.request('get', self['url'], params)
 
     def create(self, **params):
+        if self['url'].startswith(u'/v1/charges'):
+            return self.request('post', self['url'], params=params)
         return self.request('post', self['url'], params)
 
     def retrieve(self, id, **params):
@@ -232,8 +236,7 @@ class SingletonAPIResource(APIResource):
 
     @classmethod
     def retrieve(cls, api_key=None):
-        return super(SingletonAPIResource, cls).retrieve(None,
-                                                         api_key=api_key)
+        return super(SingletonAPIResource, cls).retrieve(None, api_key=api_key)
 
     @classmethod
     def class_url(cls):
@@ -256,6 +259,10 @@ class ListableAPIResource(APIResource):
         response, api_key = requestor.request('get', url, params)
         return convert_to_pingpp_object(response, api_key)
 
+    @classmethod
+    def list(cls, api_key=None, **params):
+        return cls.all(api_key, **params)
+
 
 class CreateableAPIResource(APIResource):
 
@@ -270,43 +277,40 @@ class CreateableAPIResource(APIResource):
 
 class UpdateableAPIResource(APIResource):
 
-    def save(self):
-        updated_params = self.serialize(self)
+    def __init__(self, id=None, api_key=None, **params):
+        super(UpdateableAPIResource, self).__init__(id, api_key, **params)
+        self.cancel = self.__cancel
+        self.confirm = self.__confirm
 
-        if getattr(self, 'metadata', None):
-            updated_params['metadata'] = self.serialize_metadata()
-
-        if updated_params:
-            self.refresh_from(self.request('post', self.instance_url(),
-                                           updated_params))
-        else:
-            util.logger.debug("Trying to save already saved object %r", self)
+    def __update_status(self, status):
+        params = {'status': status}
+        self.refresh_from(self.request('put', self.instance_url(), params))
         return self
 
-    def serialize_metadata(self):
-        if 'metadata' in self._unsaved_values:
-            # the metadata object has been reassigned
-            # i.e. as object.metadata = {key: val}
-            metadata_update = self.metadata
-            previous = self._previous_metadata or {}
-            keys_to_unset = set(previous.keys()) - \
-                set(self.metadata.keys())
-            for key in keys_to_unset:
-                metadata_update[key] = ""
+    def __cancel(self):
+        return self.__update_status('canceled')
 
-            return metadata_update
-        else:
-            return self.serialize(self.metadata)
+    def __confirm(self):
+        return self.__update_status('pending')
 
-    def serialize(self, obj):
-        params = {}
-        if obj._unsaved_values:
-            for k in obj._unsaved_values:
-                if k == 'id' or k == '_previous_metadata':
-                    continue
-                v = getattr(obj, k)
-                params[k] = v if v is not None else ""
-        return params
+    @classmethod
+    def _update_status(cls, id, status='canceled'):
+        params = {'status': status}
+        requestor = api_requestor.APIRequestor()
+        _instance = cls(id)
+
+        url = _instance.instance_url()
+        response, api_key = requestor.request('put', url, params)
+
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def cancel(cls, id):
+        return cls._update_status(id)
+
+    @classmethod
+    def confirm(cls, id):
+        return cls._update_status(id, 'pending')
 
 
 class DeletableAPIResource(APIResource):
@@ -316,32 +320,59 @@ class DeletableAPIResource(APIResource):
         return self
 
 
-class Charge(CreateableAPIResource, ListableAPIResource,
-             UpdateableAPIResource):
+class Charge(CreateableAPIResource, ListableAPIResource):
     def refund(self, **params):
         url = self.instance_url() + '/refunds'
         self.refresh_from(self.request('post', url, params))
         return self
 
+    def refund_list(self, **params):
+        url = self.instance_url() + '/refunds'
+        self.refresh_from(self.request('get', url, params))
+        return self
 
-class RedEnvelope(CreateableAPIResource, ListableAPIResource,
-                  UpdateableAPIResource):
+    def refund_retrieve(self, refund_id):
+        url = self.instance_url() + '/refunds/%s' % refund_id
+        self.refresh_from(self.request('get', url))
+        return self
+
+    @classmethod
+    def all(cls, app_id=None, api_key=None, **params):
+        params['app'] = {}
+        if app_id is None:
+            raise error.APIError("params app_id is required")
+        params['app']['id'] = app_id
+        requestor = api_requestor.APIRequestor(api_key)
+        url = cls.class_url()
+        response, api_key = requestor.request('get', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+
+class RedEnvelope(CreateableAPIResource, ListableAPIResource):
     @classmethod
     def class_name(cls):
         return 'red_envelope'
 
 
 class Event(ListableAPIResource):
-    pass
+    @classmethod
+    def list(cls, api_key=None, **params):
+        pass
 
 
-class Transfer(CreateableAPIResource, ListableAPIResource,
-               UpdateableAPIResource):
-    pass
+class Transfer(CreateableAPIResource, ListableAPIResource):
+    @classmethod
+    def cancel(cls, id):
+        params = {'status': 'canceled'}
+        requestor = api_requestor.APIRequestor()
+        _instance = cls(id)
+
+        url = _instance.instance_url()
+        response = requestor.request('put', url, params)
+        return convert_to_pingpp_object(response)
 
 
 class Refund(UpdateableAPIResource):
-
     def instance_url(self):
         self.id = util.utf8(self.id)
         self.charge = util.utf8(self.charge)
@@ -357,7 +388,29 @@ class Refund(UpdateableAPIResource):
             "Use charge.refunds.retrieve('refund_id') instead.")
 
 
-class Customs(CreateableAPIResource):
+class Customs(CreateableAPIResource, ListableAPIResource):
+    @classmethod
+    def class_name(cls):
+        return 'custom'
+
+
+class BatchRefund(CreateableAPIResource, ListableAPIResource):
+    @classmethod
+    def class_name(cls):
+        return 'batch_refund'
+
+
+class BatchTransfer(CreateableAPIResource, ListableAPIResource, UpdateableAPIResource):
+    @classmethod
+    def class_name(cls):
+        return "batch_transfer"
+
+
+class Identification(CreateableAPIResource):
+    @classmethod
+    def class_name(cls):
+        return 'identification'
+
     @classmethod
     def class_url(cls):
         cls_name = cls.class_name()

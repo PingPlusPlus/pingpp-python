@@ -42,6 +42,10 @@ def _api_encode(data):
             yield (key, util.utf8(value))
 
 
+def _get_utc_timestamp():
+    return str(int(time.time()))
+
+
 def _build_api_url(url, query):
     scheme, netloc, path, base_query, fragment = urlparse.urlsplit(url)
 
@@ -148,7 +152,7 @@ class APIRequestor(object):
         from pingpp import api_version
         from pingpp import accept_language
         my_accept_language = accept_language
-
+        request_utc_timestamp = _get_utc_timestamp()
         if self.api_key:
             my_api_key = self.api_key
         else:
@@ -197,16 +201,23 @@ class APIRequestor(object):
             'User-Agent':
                 'Pingplusplus/v1 PythonBindings/%s' % (version.VERSION,),
             'Authorization': 'Bearer %s' % (my_api_key,),
-            'Accept-Language': my_accept_language
+            'Accept-Language': my_accept_language,
+            'Pingplusplus-Request-Timestamp': request_utc_timestamp
         }
 
-        if method == 'post' or method == 'put':
-            headers['Content-Type'] = 'application/json;charset=UTF-8'
+        if method == "get" or method == "delete":
+            post_data = None
+            build_url = self.build_url(url, params)
+        else:
+            build_url = url
 
-            privkey = self.get_private_key()
-            if privkey is not None:
-                headers['Pingplusplus-Signature'] = self.rsa_sign(
-                    privkey, post_data)
+        rsa_data = self.get_rsa_verify_data(body=post_data, uri=build_url, timestamp=int(request_utc_timestamp))
+
+        headers['Content-Type'] = 'application/json;charset=UTF-8'
+        privkey = self.get_private_key()
+        if privkey is not None:
+            headers['Pingplusplus-Signature'] = self.rsa_sign(
+                privkey, rsa_data)
 
         if api_version is not None:
             headers['Pingplusplus-Version'] = api_version
@@ -318,10 +329,14 @@ class APIRequestor(object):
         from Crypto.Signature import PKCS1_v1_5
         from Crypto.Hash import SHA256
         from base64 import b64encode
-
         rsa_key = RSA.importKey(private_key)
         signer = PKCS1_v1_5.new(rsa_key)
-        digest = SHA256.new(data)
+        digest = SHA256.new(data.encode())
         sign = signer.sign(digest)
 
         return b64encode(sign)
+
+    def get_rsa_verify_data(self, body, uri, timestamp):
+        verify_data = [body.decode()] if body else []
+        verify_data.extend([uri, repr(timestamp)])
+        return "".join(verify_data)
