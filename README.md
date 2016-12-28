@@ -142,7 +142,7 @@ pingpp.BatchRefund.create（
 
 ### 查询 Batch refund 对象
 ```python
-pingpp.BatchRefund.retrieve("batchrefund20160801001")
+pingpp.BatchRefund.retrieve('BATCH_REFUND_ID')
 ```
 
 ### 查询 Batch refund 对象列表
@@ -166,7 +166,7 @@ pingpp.BatchTransfer.create(**req_params)
 
 ### 查询批量付款
 ```python
-pingpp.BatchTransfer.retrieve('BATCH_0001')
+pingpp.BatchTransfer.retrieve('BATCH_TRANSFER_ID')
 ```
 
 ### 查询批量付款列表
@@ -176,7 +176,7 @@ pingpp.BatchTransfer.list()
 
 ### 更新批量付款对象 (仅unionpay渠道支持)
 ```python
-pingpp.BatchTransfer.cancel('BATCH_0001')
+pingpp.BatchTransfer.cancel('BATCH_TRANSFER_ID')
 ```
 
 ## 身份证银行卡信息认证接口
@@ -208,7 +208,7 @@ pingpp.Customs.create(
 
 ### 查询报关接口
 ```python
-pingpp.Customs.retrieve("14201607013878045463")
+pingpp.Customs.retrieve("CUSTOMS_ID")
 ```
 
 **详细信息请参考 [API 文档](https://pingxx.com/document/api?python)。**
