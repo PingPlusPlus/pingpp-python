@@ -55,7 +55,13 @@ except Exception as e:
 
 print "获取Charge对象列表:"
 try:
-    charge_list = pingpp.Charge.all(app_id=app_id)
+    params = {
+        'app': {
+            'id': app_id
+        }
+    }
+    params = {}
+    charge_list = pingpp.Charge.all(**params)
     print charge_list
 except Exception as e:
     print e.http_body

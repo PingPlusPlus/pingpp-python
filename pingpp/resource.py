@@ -338,10 +338,8 @@ class Charge(CreateableAPIResource, ListableAPIResource):
 
     @classmethod
     def all(cls, app_id=None, api_key=None, **params):
-        params['app'] = {}
-        if app_id is None:
-            raise error.APIError("params app_id is required")
-        params['app']['id'] = app_id
+        if params and params['app']['id'] is None:
+            raise error.InvalidRequestError('Please pass app[id] as parameter', 'app[id]')
         requestor = api_requestor.APIRequestor(api_key)
         url = cls.class_url()
         response, api_key = requestor.request('get', url, params)
