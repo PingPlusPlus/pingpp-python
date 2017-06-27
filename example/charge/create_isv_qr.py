@@ -38,7 +38,7 @@ try:
     charge = pingpp.Charge.create(
         order_no=order_no,  # 推荐使用 8-20 位，要求数字或字母，不允许其他字符
         amount=100,  # 订单总金额, 人民币单位：分（如订单总金额为 1 元，此处请填 100）
-        app=dict(id=pingpp.app_id),
+        app=dict(id=app_id),
         channel='isv_qr',  # https://www.pingxx.com/api#支付渠道属性值
         currency='cny',
         client_ip='127.0.0.1',  # 发起支付请求客户端的 IP 地址，格式为 IPV4，如: 127.0.0.1
