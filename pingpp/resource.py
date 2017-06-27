@@ -165,7 +165,6 @@ class PingppObject(dict):
 
 
 class PingppObjectEncoder(util.json.JSONEncoder):
-
     def __init__(self, *args, **kwargs):
         warnings.warn(
             '`PingppObjectEncoder` is deprecated and will be removed in '
@@ -177,7 +176,6 @@ class PingppObjectEncoder(util.json.JSONEncoder):
 
 
 class APIResource(PingppObject):
-
     @classmethod
     def retrieve(cls, id, api_key=None, **params):
         instance = cls(id, api_key, **params)
@@ -214,7 +212,6 @@ class APIResource(PingppObject):
 
 
 class ListObject(PingppObject):
-
     def all(self, **params):
         return self.request('get', self['url'], params)
 
@@ -233,7 +230,6 @@ class ListObject(PingppObject):
 
 
 class SingletonAPIResource(APIResource):
-
     @classmethod
     def retrieve(cls, api_key=None):
         return super(SingletonAPIResource, cls).retrieve(None, api_key=api_key)
@@ -251,7 +247,6 @@ class SingletonAPIResource(APIResource):
 
 
 class ListableAPIResource(APIResource):
-
     @classmethod
     def all(cls, api_key=None, **params):
         requestor = api_requestor.APIRequestor(api_key)
@@ -265,7 +260,6 @@ class ListableAPIResource(APIResource):
 
 
 class CreateableAPIResource(APIResource):
-
     @classmethod
     def create(cls, api_key=None, **params):
         requestor = api_requestor.APIRequestor(api_key)
@@ -276,7 +270,6 @@ class CreateableAPIResource(APIResource):
 
 
 class UpdateableAPIResource(APIResource):
-
     def __init__(self, id=None, api_key=None, **params):
         super(UpdateableAPIResource, self).__init__(id, api_key, **params)
         self.cancel = self.__cancel
@@ -314,7 +307,6 @@ class UpdateableAPIResource(APIResource):
 
 
 class DeletableAPIResource(APIResource):
-
     def delete(self, **params):
         self.refresh_from(self.request('delete', self.instance_url(), params))
         return self
@@ -345,6 +337,13 @@ class Charge(CreateableAPIResource, ListableAPIResource):
         response, api_key = requestor.request('get', url, params)
         return convert_to_pingpp_object(response, api_key)
 
+    @classmethod
+    def reverse(cls, charge_id=None, api_key=None, **params):
+        url = cls.class_url() + '/%s/reverse' % charge_id
+        requestor = api_requestor.APIRequestor(api_key)
+        response, api_key = requestor.request('post', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
 
 class RedEnvelope(CreateableAPIResource, ListableAPIResource):
     @classmethod
@@ -366,8 +365,8 @@ class Transfer(CreateableAPIResource, ListableAPIResource):
         _instance = cls(id)
 
         url = _instance.instance_url()
-        response = requestor.request('put', url, params)
-        return convert_to_pingpp_object(response)
+        response, api_key = requestor.request('put', url, params)
+        return convert_to_pingpp_object(response, api_key)
 
 
 class Refund(UpdateableAPIResource):

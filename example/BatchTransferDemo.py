@@ -27,15 +27,15 @@ req_params = {
         {
             "account": "account01@alipay.com",
             "amount": 5000,
-            "name": "李狗"
+            "name": "张三"
         },
         {
             "account": "account02@alipay.com",
             "amount": 3000,
-            "name": "伢子"
+            "name": "李四"
         }
     ],
-    'type':'b2c',
+    'type': 'b2c',
     'channel': 'alipay',
     'amount': 8000,
     "app": app_id,

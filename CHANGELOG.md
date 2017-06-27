@@ -1,5 +1,11 @@
 # ChangeLog
 
+# 2.2.0
+* 增加:
+    - 完善charge,batch_refund,batch_transfer接入示例
+    - 新增线下渠道charge创建示例
+    - 新增线下渠道charge撤销接口
+
 # 2.1.1
 * 修改:
     - charge列表获取兼容性修复,获取列表比如传入app[id]参数

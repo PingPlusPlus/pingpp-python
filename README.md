@@ -50,25 +50,30 @@ pingpp.Charge.retrieve('CHARGE_ID')
 ```python
 pingpp.Charge.all()
 ```
+### 线下渠道交易撤销
+```python
+pingpp.Charge.reverse('ch_DqnrL8f5GCuLzvvLW1j5OWTK')
+```
 
 ### 退款
-``` python
-ch = pingpp.Charge.retrieve('CHARGE_ID')
-re = ch.refunds.create(
-    amount=1,
-    description='Refund Description'
-)
+```python
+ch = pingpp.Charge.retrieve("CHARGE_ID")
+ch.refunds.create(description='Your Descripton', amount=1)
+```
+
+### 退款列表
+```python
+params = {
+    'limit': 3,
+}
+charge = pingpp.Charge.retrieve('ch_W5CCe9uPujnDLqvbvH9OOS8S')
+charge.refund_list(**params)
 ```
 
 ### 退款查询
 ```python
-ch = pingpp.Charge.retrieve('CHARGE_ID')
-re = ch.refunds.retrieve('REFUND_ID')
-```
-
-```python
-ch = pingpp.Charge.retrieve('CHARGE_ID')
-res = ch.refunds.all(limit=3)
+charge = pingpp.Charge.retrieve('CHARGE_ID')
+charge.refund_retrieve('REFUND_ID')
 ```
 
 ### 微信红包
