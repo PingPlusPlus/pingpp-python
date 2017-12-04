@@ -225,6 +225,10 @@ class APIRequestor(object):
         rbody, rcode = self._client.request(
             method, abs_url, headers, post_data)
 
+        if rcode == 502 and pingpp.bad_gateway_match and pingpp.max_retry < pingpp.max_network_retries:
+            pingpp.max_retry += 1
+            self.request_raw(method, url, params)
+
         util.logger.info(
             'API request to %s returned (response code, response body) of '
             '(%d, %r)',
@@ -330,13 +334,12 @@ class APIRequestor(object):
         from Crypto.Hash import SHA256
         from base64 import b64encode
         rsa_key = RSA.importKey(private_key)
-        signer = PKCS1_v1_5.new(rsa_key)
-        digest = SHA256.new(data.encode())
-        sign = signer.sign(digest)
+        sign = PKCS1_v1_5.new(rsa_key).sign(SHA256.new(data.encode()))
 
         return b64encode(sign)
 
     def get_rsa_verify_data(self, body, uri, timestamp):
         verify_data = [body.decode()] if body else []
+        # if not body:
         verify_data.extend([uri, repr(timestamp)])
         return "".join(verify_data)

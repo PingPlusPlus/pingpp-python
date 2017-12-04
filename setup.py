@@ -27,7 +27,7 @@ if sys.version_info < (2, 6):
     install_requires.append('ssl')
 else:
     install_requires.append('requests >= 0.8.8')
-    install_requires.append('pycrypto >= 2.6.1')
+    install_requires.append('pycryptodome >= 3.4.7')
 
 # Don't import pingpp module here, since deps may not be installed
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'pingpp'))

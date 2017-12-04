@@ -45,7 +45,7 @@ req_params = {
         }
     ],
     "type": "b2c",  # 付款类型 (当前 alipay、wx_pub 仅支持: b2c, unionpay、allinpay、jdpay 支持:  b2b、b2c)
-    "channel": "jdpay",  # 目前支持 渠道。支付宝：alipay，银联：unionpay，微信公众号：wx_pub，通联：allinpay，京东：jdpay
+    "channel": "jdpay",  # 目前支持 渠道。支付宝：alipay，银联：unionpay，微信公众号：wx_pub，通联：allinpay，京东：jdpay 余额：balance。
     "amount": 8000,  # 批量付款总金额，单位为分。为 recipients 中 amount 的总和。
     "app": app_id,
     "batch_no": "batchtrans20160801001",  # 批量转账批次号，3-24位，允许字母和英文

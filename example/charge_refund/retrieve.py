@@ -34,4 +34,4 @@ try:
     charge_refund = charge.refund_retrieve('re_irb1COq1ezTCXP0WfPervbHK')
     print charge_refund
 except Exception as e:
-    print e
+    print e.http_body

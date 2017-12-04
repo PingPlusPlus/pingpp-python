@@ -9,6 +9,9 @@ accept_language = None
 private_key_path = None
 private_key = None
 app_id = None
+max_network_retries = 1
+bad_gateway_match = True
+max_retry = 0
 
 from pingpp.error import (  # noqa
     PingppError,
@@ -25,9 +28,28 @@ from pingpp.resource import (  # noqa
     Transfer,
     Customs,
     BatchRefund,
+    Order,
+    OrderRefunds,
+    User,
+    CouponTemplate,
+    BalanceTransaction,
+    Withdrawal,
+    Coupon,
     BatchTransfer,
     Identification,
-    )
+    Recharge,
+    BatchWithdrawal,
+    SubApp,
+    Channel,
+    SettleAccount,
+    Royaltie,
+    RoyaltySettlement,
+    RoyaltyTransaction,
+    RoyaltyTemplate,
+    BalanceBonus,
+    BalanceTransfer,
+    RechargeRefund
+)
 
 from pingpp.version import VERSION  # noqa
 from pingpp.api_requestor import APIRequestor  # noqa

@@ -17,12 +17,12 @@ pingpp.api_key = api_key
 pingpp.private_key_path = os.path.join(
     os.path.dirname(os.getcwd()), 'your_rsa_private_key.pem')
 '''
-    批量转账-查询
+    Transfers 企业付款 查询示例
 '''
 
 try:
     # 查询指定转账 id 信息
-    transfer_info = pingpp.Transfer.retrieve('tr_5mXn5C9yLi18rz1G8CSCqDaT')
+    transfer_info = pingpp.Transfer.retrieve('tr_X9C8qD4ajvjLSmTWvHvTejv1')
     print transfer_info
 except Exception as e:
     print(e.http_body)

@@ -24,9 +24,9 @@ pingpp.api_key = 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
 pingpp.private_key_path = os.path.join(
     os.path.dirname(os.getcwd()), 'your_rsa_private_key.pem')
 
-# 更新 Transfer对象
+# 更新  transfer 的状态，只支持  canceled 。
 try:
-    transfer_info = pingpp.Transfer.cancel('tr_5mXn5C9yLi18rz1G8CSCqDaT')
+    transfer_info = pingpp.Transfer.cancel('tr_X9C8qD4ajvjLSmTWvHvTejv1')
     print transfer_info
 except Exception as e:
     print(e.http_body)

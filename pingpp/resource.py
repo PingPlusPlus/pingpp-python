@@ -11,7 +11,16 @@ def convert_to_pingpp_object(resp, api_key):
     types = {'charge': Charge, 'list': ListObject,
              'refund': Refund, 'red_envelope': RedEnvelope,
              'event': Event, 'transfer': Transfer,
-             'Identification': Identification
+             'Order': Order, 'CouponTemplate': CouponTemplate,
+             'User': User, 'Withdrawal': Withdrawal,
+             'Coupon': Coupon, 'BatchTransfer': BatchTransfer,
+             'BatchRefund': BatchRefund,
+             'Identification': Identification, 'OrderRefunds': OrderRefunds,
+             "Recharge": Recharge, 'settle_account': SettleAccount,
+             'royalty_settlement': RoyaltySettlement,
+             'royalty_transaction': RoyaltyTransaction,
+             'royalty_template': RoyaltyTemplate,
+             'balance_bonus': BalanceBonus,
              }
 
     if isinstance(resp, list):
@@ -415,3 +424,593 @@ class Identification(CreateableAPIResource):
 
     def instance_url(self):
         return self.class_url()
+
+class Order(CreateableAPIResource, ListableAPIResource, UpdateableAPIResource):
+    @classmethod
+    def pay(cls, id, api_key=None, **params):
+        requestor = api_requestor.APIRequestor(api_key)
+        instance = cls(id, api_key, **params)
+        url = instance.instance_url() + '/pay'
+        response, api_key = requestor.request('post', url, params)
+
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def cancel(cls, id, api_key=None, **params):
+        params['status'] = 'canceled'
+        requestor = api_requestor.APIRequestor(api_key)
+        instance = cls(id, api_key, **params)
+        url = instance.instance_url()
+        response, api_key = requestor.request('put', url, params)
+
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def _update_status(cls, id, status='canceled'):
+        params = {'status': status}
+        requestor = api_requestor.APIRequestor()
+        _instance = cls(id)
+
+        url = _instance.instance_url()
+        response, api_key = requestor.request('put', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def charge_list(cls, id, api_key=None, **params):
+        instance = cls(id, api_key, **params)
+        requestor = api_requestor.APIRequestor(api_key)
+        url = "%s/%s/charges" % (instance.class_url(), id)
+        response, api_key = requestor.request('get', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def charge_retrieve(cls, id, charge_id, api_key=None, **params):
+        instance = cls(id, api_key, **params)
+        requestor = api_requestor.APIRequestor(api_key)
+        url = "%s/%s/charges/%s" % (instance.class_url(), id, charge_id)
+        response, api_key = requestor.request('get', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+
+class OrderRefunds(CreateableAPIResource, ListableAPIResource):
+    @classmethod
+    def create(cls, api_key=None, order_id=None, **params):
+        requestor = api_requestor.APIRequestor(api_key)
+        instance = cls(order_id, api_key, **params)
+        url = instance.instance_url(order_id)
+        response, api_key = requestor.request('post', url, params)
+
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def list(cls, api_key=None, order_id=None, **params):
+        requestor = api_requestor.APIRequestor(api_key)
+        instance = cls(id, api_key)
+        url = instance.instance_url(order_id)
+        response, api_key = requestor.request('get', url, params)
+
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def retrieve(cls, api_key=None, order_id=None, refund_id=None, **params):
+        requestor = api_requestor.APIRequestor(api_key)
+        instance = cls(id, api_key)
+        url = instance.instance_url(order_id, refund_id)
+        response, api_key = requestor.request('get', url, params)
+
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def class_url(cls, order_id=None, order_refunds_id=None):
+        base_order_url = "/v1/orders/%s/order_refunds" % order_id
+        return base_order_url if not order_refunds_id else "%s/%s" % (base_order_url, order_refunds_id)
+
+    @classmethod
+    def instance_url(cls, order_id=None, refund_id=None):
+        return cls.class_url(order_id, refund_id)
+
+
+class AppAPIResource(PingppObject):
+    @classmethod
+    def retrieve(cls, id, api_key=None, app=None, **params):
+        instance = cls(id, api_key, **params)
+        instance.refresh(app)
+        return instance
+
+    def refresh(self, app=None):
+        self.refresh_from(self.request('get', self.instance_url(app)))
+        return self
+
+    @classmethod
+    def class_name(cls):
+        if cls == APIResource:
+            raise NotImplementedError(
+                'APIResource is an abstract class.  You should perform '
+                'actions on its subclasses (e.g. Charge, Customer)')
+        return str(urllib.quote_plus(cls.__name__.lower()))
+
+    @classmethod
+    def class_url(cls, app=None):
+        cls_name = cls.class_name()
+        if not app:
+            from pingpp import app_id
+            app = app_id
+        return "/v1/apps/%s/%ss" % (app, cls_name)
+
+    def instance_url(self, app=None):
+        id = self.get('id')
+        if not id:
+            raise error.InvalidRequestError(
+                'Could not determine which URL to request: %s instance '
+                'has invalid ID: %r' % (type(self).__name__, id), 'id')
+        id = util.utf8(id)
+        base = self.class_url(app)
+        extn = urllib.quote_plus(id)
+        return "%s/%s" % (base, extn)
+
+
+class CreateableAppAPIResource(AppAPIResource):
+    @classmethod
+    def create(cls, api_key=None, app=None, **params):
+        requestor = api_requestor.APIRequestor(api_key)
+        url = cls.class_url(app)
+        response, api_key = requestor.request('post', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+
+class ListableAppAPIResource(AppAPIResource):
+    @classmethod
+    def list(cls, api_key=None, app=None, **params):
+        requestor = api_requestor.APIRequestor(api_key)
+        url = cls.class_url(app)
+        response, api_key = requestor.request('get', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+
+class UpdateableAppAPIResource(AppAPIResource):
+    def __init__(self, id=None, api_key=None, **params):
+        super(UpdateableAppAPIResource, self).__init__(id, api_key, **params)
+        self.cancel = self.__cancel
+        self.confirm = self.__confirm
+        self.delete = self.__delete
+        self.update = self.__update
+
+    @classmethod
+    def _update_status(cls, id, app=None, method="post", status=None, **params):
+        if status:
+            params = {'status': status}
+        requestor = api_requestor.APIRequestor()
+        _instance = cls(id)
+        url = _instance.instance_url()
+        response, api_key = requestor.request(method, url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def update(cls, id, app=None, **params):
+        return cls._update_status(id, app, 'put', **params)
+
+    @classmethod
+    def delete(cls, id, app=None, **params):
+        return cls._update_status(id, app, 'delete', **params)
+
+    @classmethod
+    def cancel(cls, id, app=None):
+        return cls._update_status(id, app, 'put', 'canceled')
+
+    @classmethod
+    def confirm(cls, id, app=None):
+        return cls._update_status(id, app, 'put', 'pending')
+
+    def __update_status(self, method='put', status=None):
+        if status:
+            params = {'status': status}
+        self.refresh_from(self.request(method, self.instance_url(None), params))
+        return self
+
+    def __cancel(self, app=None):
+        return self.__update_status('put', 'canceled')
+
+    def __confirm(self, app=None):
+        return self.__update_status('put', 'pending')
+
+    def __update(self, app=None):
+        return self.__update_status('post')
+
+    def __delete(self, app=None):
+        return self.__update_status('delete')
+
+
+class CouponTemplate(CreateableAppAPIResource, ListableAppAPIResource, UpdateableAppAPIResource):
+    def __init__(self, id=None, api_key=None, **params):
+        super(CouponTemplate, self).__init__(id, api_key, **params)
+        self.create_coupons = self.__create_coupons
+        self.retrieve_coupons = self.__retrieve_coupons
+
+    @classmethod
+    def class_name(cls):
+        return 'coupon_template'
+
+    @classmethod
+    def __operate_coupons(cls, api_key=None, app=None, coupon_tmpl=None, method='get', **params):
+        _instance = cls(coupon_tmpl, api_key, **params)
+        url = _instance.__return_req_url(app)
+        requestor = api_requestor.APIRequestor(api_key)
+        response, api_key = requestor.request(method, url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def create_coupons(cls, api_key=None, app=None, coupon_tmpl=None, **params):
+        response = cls.__operate_coupons(api_key, app, coupon_tmpl, method='post', **params)
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def retrieve_coupons(cls, api_key=None, app=None, coupon_tmpl=None, **params):
+        response = cls.__operate_coupons(api_key, app, coupon_tmpl, method='get', **params)
+        return convert_to_pingpp_object(response, api_key)
+
+    def __create_coupons(self, app=None, **params):
+        url = self.__return_req_url(app)
+        self.refresh_from(self.request('post', url, params))
+        return self
+
+    def __retrieve_coupons(self, app=None):
+        url = self.__return_req_url(app)
+        self.refresh_from(self.request('get', url))
+        return self
+
+    def __return_req_url(self, app=None):
+        return self.instance_url(app) + "/coupons"
+
+
+class User(CreateableAppAPIResource, ListableAppAPIResource, UpdateableAppAPIResource, DeletableAPIResource):
+    @classmethod
+    def class_name(cls):
+        return 'user'
+
+    @classmethod
+    def createBalanceTransfer(cls, api_key=None, app=None, user=None, **params):
+        userObj = User(user, api_key=api_key)
+        instance_url = userObj.instance_url(app) + "/transfers"
+        requestor = api_requestor.APIRequestor(api_key)
+        response, api_key = requestor.request('post', instance_url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def update(cls, api_key=None, app=None, user=None, **params):
+        userObj = User(user, api_key=api_key)
+        instance_url = userObj.instance_url(app)
+        requestor = api_requestor.APIRequestor(api_key)
+        response, api_key = requestor.request('put', instance_url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+
+class UserAPIResource(PingppObject):
+    @classmethod
+    def retrieve(cls, id, api_key=None, app=None, user=None, **params):
+        instance = cls(id, api_key, **params)
+        instance.refresh(app, user)
+        return instance
+
+    def refresh(self, app=None, user=None, method='get'):
+        self.refresh_from(self.request(method, self.instance_url(app, user)))
+        return self
+
+    @classmethod
+    def class_name(cls):
+        if cls == APIResource:
+            raise NotImplementedError(
+                'APIResource is an abstract class.  You should perform '
+                'actions on its subclasses (e.g. Charge, Customer)')
+        return str(urllib.quote_plus(cls.__name__.lower()))
+
+    @classmethod
+    def class_url(cls, app=None, user=None):
+        cls_name = cls.class_name()
+        if not app:
+            from pingpp import app_id
+            app = app_id
+        return "/v1/apps/%s/users/%s/%ss" % (app, user, cls_name)
+
+    def instance_url(self, app=None, user=None):
+        id = self.get('id')
+        if not id:
+            raise error.InvalidRequestError(
+                'Could not determine which URL to request: %s instance '
+                'has invalid ID: %r' % (type(self).__name__, id), 'id')
+        id = util.utf8(id)
+        base = self.class_url(app, user)
+        extn = urllib.quote_plus(id)
+        return "%s/%s" % (base, extn)
+
+
+class CreateableUserAPIResource(UserAPIResource):
+    @classmethod
+    def create(cls, api_key=None, app=None, user=None, **params):
+        requestor = api_requestor.APIRequestor(api_key)
+        url = cls.class_url(app, user)
+        response, api_key = requestor.request('post', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+
+class ListableUserAPIResource(UserAPIResource):
+    @classmethod
+    def list(cls, api_key=None, app=None, user=None, **params):
+        requestor = api_requestor.APIRequestor(api_key)
+        url = cls.class_url(app, user)
+        response, api_key = requestor.request('get', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+
+class UpdateableUserAPIResource(UserAPIResource):
+    def __init__(self, id=None, api_key=None, **params):
+        super(UpdateableUserAPIResource, self).__init__(id, api_key, **params)
+        self.cancel = self.__cancel
+        self.confirm = self.__confirm
+        self.delete = self.__delete
+
+    def __update_status(self, status, app=None, user=None):
+        params = {'status': status}
+        self.refresh_from(self.request('put', self.instance_url(app, user), params))
+        return self
+
+    def __cancel(self, app=None, user=None):
+        return self.__update_status('canceled', app, user)
+
+    def __confirm(self, app=None, user=None):
+        return self.__update_status('pending', app, user)
+
+    def __update(self, app=None, user=None, **params):
+        return self.request('put', self.instance_url(app, user), params)
+
+    def __delete(self, app=None, user=None):
+        return self.__delete(app, user)
+
+    @classmethod
+    def _update_status(cls, id, app=None, user=None, status='canceled'):
+        params = {'status': status}
+        requestor = api_requestor.APIRequestor()
+        _instance = cls(id)
+
+        url = _instance.instance_url(app, user)
+        response, api_key = requestor.request('put', url, params)
+
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def __delete(cls, id, app=None, user=None):
+        requestor = api_requestor.APIRequestor()
+        _instance = cls(id)
+
+        url = _instance.instance_url(app, user)
+        response, api_key = requestor.request('delete', url)
+
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def cancel(cls, id, app=None, user=None):
+        return cls._update_status(id, app, user)
+
+    @classmethod
+    def confirm(cls, id, app=None, user=None):
+        return cls._update_status(id, app, user, 'pending')
+
+
+class BalanceTransaction(ListableAppAPIResource):
+    @classmethod
+    def class_name(cls):
+        return 'balance_transaction'
+
+
+class Withdrawal(CreateableUserAPIResource, ListableUserAPIResource, UpdateableUserAPIResource):
+    @classmethod
+    def class_name(cls):
+        return "withdrawal"
+
+
+class BatchWithdrawal(CreateableAppAPIResource, ListableAppAPIResource):
+    @classmethod
+    def class_name(cls):
+        return "batch_withdrawal"
+
+
+class Coupon(CreateableUserAPIResource, ListableUserAPIResource):
+    @classmethod
+    def class_name(cls):
+        return 'coupon'
+
+    @classmethod
+    def delete(cls, id=None, app=None, api_key=None, user=None, **params):
+        requestor = api_requestor.APIRequestor(api_key)
+        instance = cls(id, api_key)
+        url = instance.instance_url(app, user)
+        response, api_key = requestor.request('delete', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def update(cls, id=None, app=None, api_key=None, user=None, **params):
+        requestor = api_requestor.APIRequestor(api_key)
+        instance = cls(id, api_key)
+        url = instance.instance_url(app, user)
+        response, api_key = requestor.request('put', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+
+
+class SubApp(CreateableAppAPIResource, ListableAppAPIResource, UpdateableAppAPIResource):
+    @classmethod
+    def class_name(cls):
+        return 'sub_app'
+
+
+class Channel(CreateableAppAPIResource, ListableAppAPIResource, UpdateableAPIResource):
+    @classmethod
+    def class_name(cls):
+        return 'channel'
+
+    def class_url(cls, app=None, sub_app_id=None, channel=None):
+        app = util.utf8(app)
+        sub_app_id = util.utf8(sub_app_id)
+        if channel:
+            channel = util.utf8(channel)
+            return "/v1/apps/%s/sub_apps/%s/channels/%s" % (app, sub_app_id, channel)
+        else:
+            return "/v1/apps/%s/sub_apps/%s/channels" % (app, sub_app_id)
+
+    def instance_url(self, app=None, sub_app_id=None, channel=None):
+        return self.class_url(app, sub_app_id, channel)
+
+    @classmethod
+    def create(cls, api_key=None, app=None, sub_app_id=None, **params):
+        requestor = api_requestor.APIRequestor(api_key)
+        instance = cls(id, api_key)
+        url = instance.instance_url(app, sub_app_id)
+        response, api_key = requestor.request('post', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def retrieve(cls, api_key=None, app=None, sub_app_id=None, channel=None, **params):
+        requestor = api_requestor.APIRequestor(api_key)
+        instance = cls(id, api_key)
+        url = instance.instance_url(app, sub_app_id, channel)
+        response, api_key = requestor.request('get', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def update(cls, api_key=None, app=None, sub_app_id=None, channel=None, **params):
+        requestor = api_requestor.APIRequestor(api_key)
+        instance = cls(id, api_key)
+        url = instance.instance_url(app, sub_app_id, channel)
+        response, api_key = requestor.request('put', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def delete(cls, api_key=None, app=None, sub_app_id=None, channel=None, **params):
+        requestor = api_requestor.APIRequestor(api_key)
+        instance = cls(id, api_key)
+        url = instance.instance_url(app, sub_app_id, channel)
+        response, api_key = requestor.request('delete', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+
+class SettleAccount(CreateableUserAPIResource, UpdateableUserAPIResource, ListableUserAPIResource):
+    @classmethod
+    def class_name(cls):
+        return 'settle_account'
+
+    @classmethod
+    def retrieve(cls, api_key=None, app=None, user=None, settle_account_id=None, **params):
+        requestor = api_requestor.APIRequestor(api_key)
+        instance = cls(settle_account_id, api_key)
+        url = instance.instance_url(app, user)
+        response, api_key = requestor.request('get', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def delete(cls, api_key=None, app=None, user=None, settle_account_id=None, **params):
+        requestor = api_requestor.APIRequestor(api_key)
+        instance = cls(settle_account_id, api_key)
+        url = instance.instance_url(app, user)
+        response, api_key = requestor.request('delete', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+
+class Royaltie(CreateableAPIResource, ListableAPIResource, UpdateableAPIResource):
+    @classmethod
+    def class_name(cls):
+        return 'royaltie'
+
+    @classmethod
+    def update(cls, api_key=None, **params):
+        requestor = api_requestor.APIRequestor(api_key)
+        url = cls.class_url()
+        response, api_key = requestor.request('put', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+
+class RoyaltySettlement(CreateableAPIResource, UpdateableAPIResource, ListableAPIResource):
+    @classmethod
+    def class_name(cls):
+        return 'royalty_settlement'
+
+
+class RoyaltyTransaction(ListableAPIResource):
+    @classmethod
+    def class_name(cls):
+        return 'royalty_transaction'
+
+
+class RoyaltyTemplate(CreateableAPIResource, UpdateableAPIResource, ListableAPIResource, DeletableAPIResource):
+    @classmethod
+    def class_name(cls):
+        return 'royalty_template'
+
+    @classmethod
+    def update(cls, id, **params):
+        _instance = cls(id)
+        requestor = api_requestor.APIRequestor(_instance.api_key)
+        url = _instance.instance_url()
+        response, api_key = requestor.request('put', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def delete(cls, id, **params):
+        _instance = cls(id)
+        requestor = api_requestor.APIRequestor(_instance.api_key)
+        url = _instance.instance_url()
+        response, api_key = requestor.request('delete', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+
+class BalanceBonus(CreateableAppAPIResource, ListableAppAPIResource):
+    @classmethod
+    def class_name(cls):
+        return 'balance_bonuse'
+
+
+class BalanceTransfer(CreateableAppAPIResource, ListableAppAPIResource):
+    @classmethod
+    def class_name(cls):
+        return 'balance_transfer'
+
+
+class Recharge(CreateableAppAPIResource, ListableAppAPIResource):
+    @classmethod
+    def class_name(cls):
+        return 'recharge'
+
+
+class RechargeRefund(AppAPIResource):
+    def __init__(self, id=None, api_key=None, **params):
+        super(RechargeRefund, self).__init__(id, api_key, **params)
+
+    @classmethod
+    def class_name(cls):
+        return 'recharge'
+
+    @classmethod
+    def create(cls, id=None, api_key=None, app=None, **params):
+        instance = cls(id, api_key, **params)
+        requestor = api_requestor.APIRequestor(api_key)
+        url = "%s/%s/refunds" % (instance.class_url(), id)
+        response, api_key = requestor.request('post', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def retrieve(cls, id, refund_id=None, api_key=None, app=None, **params):
+        if not refund_id:
+            raise error.InvalidRequestError(
+                'Could not determine which URL to request: %s instance '
+                'has invalid ID: %r' % (type(cls).__name__, refund_id), 'id')
+        instance = cls(id, api_key, **params)
+        requestor = api_requestor.APIRequestor(api_key)
+        url = "%s/%s/refunds/%s" % (instance.class_url(), id, refund_id)
+        response, api_key = requestor.request('get', url, params)
+        return convert_to_pingpp_object(response, api_key)
+
+    @classmethod
+    def list(cls, id, api_key=None, app=None, **params):
+        instance = cls(id, api_key, **params)
+        requestor = api_requestor.APIRequestor(api_key)
+        url = "%s/%s/refunds" % (instance.class_url(), id)
+        response, api_key = requestor.request('get', url, params)
+        return convert_to_pingpp_object(response, api_key)
