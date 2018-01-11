@@ -18,7 +18,8 @@ pingpp.api_key = api_key
 # app_id 支持全局配置
 pingpp.app_id = app_id
 pingpp.private_key_path = os.path.join(
-    os.path.dirname(os.getcwd()), 'your_rsa_private_key.pem')
+    os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
+    'your_rsa_private_key.pem')
 
 try:
     # 创建子商户

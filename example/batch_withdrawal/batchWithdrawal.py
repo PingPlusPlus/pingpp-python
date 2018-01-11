@@ -27,7 +27,8 @@ pingpp.api_key = api_key
   注：报关接口，必须配置该值，不管是否启用，都需要验证签名。
 '''
 pingpp.private_key_path = os.path.join(
-    os.path.dirname(os.getcwd()), 'your_rsa_private_key.pem')
+    os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
+    'your_rsa_private_key.pem')
 
 '''
     批量提现确认

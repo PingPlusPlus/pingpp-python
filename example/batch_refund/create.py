@@ -21,7 +21,8 @@ app_id = 'app_1Gqj58ynP0mHeX1q'
 pingpp.api_key = api_key
 
 pingpp.private_key_path = os.path.join(
-    os.path.dirname(os.getcwd()), 'your_rsa_private_key.pem')
+    os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
+    'your_rsa_private_key.pem')
 
 batch_no = 'batchrefund' + str(random.randint(1, 10000))
 

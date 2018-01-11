@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function
 
 import os
 import sys
 import textwrap
 import warnings
+import email
 
-from pingpp import error, util
+import pingpp
+from pingpp import error, util, six
 
 
 # - Requests is the preferred HTTP library
@@ -13,7 +16,7 @@ from pingpp import error, util
 # - Use Pycurl if it's there (at least it verifies SSL certs)
 # - Fall back to urllib2 with a warning if needed
 try:
-    import urllib2
+    from pingpp.six.moves import urllib
 except ImportError:
     pass
 
@@ -51,6 +54,9 @@ try:
 except ImportError:
     urlfetch = None
 
+# proxy support for the pycurl client
+from pingpp.six.moves.urllib.parse import urlparse
+
 
 def new_default_http_client(*args, **kwargs):
     if urlfetch:
@@ -73,8 +79,17 @@ def new_default_http_client(*args, **kwargs):
 
 class HTTPClient(object):
 
-    def __init__(self, verify_ssl_certs=True):
+    def __init__(self, verify_ssl_certs=True, proxy=None):
         self._verify_ssl_certs = verify_ssl_certs
+        if proxy:
+            if type(proxy) is str:
+                proxy = {"http": proxy, "https": proxy}
+            if not (type(proxy) is dict):
+                raise ValueError(
+                    "Proxy(ies) must be specified as either a string "
+                    "URL or a dict() with string URL under the"
+                    " ""https"" and/or ""http"" keys.")
+        self._proxy = proxy.copy() if proxy else None
 
     def request(self, method, url, headers, post_data=None):
         raise NotImplementedError(
@@ -83,6 +98,11 @@ class HTTPClient(object):
 
 class RequestsClient(HTTPClient):
     name = 'requests'
+
+    def __init__(self, timeout=pingpp.timeout, session=None, **kwargs):
+        super(RequestsClient, self).__init__(**kwargs)
+        self._timeout = timeout
+        self._session = session or requests.Session()
 
     def request(self, method, url, headers, post_data=None):
         kwargs = {}
@@ -93,14 +113,17 @@ class RequestsClient(HTTPClient):
         else:
             kwargs['verify'] = False
 
+        if self._proxy:
+            kwargs['proxies'] = self._proxy
+
         try:
             try:
-                result = requests.request(method,
-                                          url,
-                                          headers=headers,
-                                          data=post_data,
-                                          timeout=80,
-                                          **kwargs)
+                result = self._session.request(method,
+                                               url,
+                                               headers=headers,
+                                               data=post_data,
+                                               timeout=pingpp.timeout,
+                                               **kwargs)
             except TypeError as e:
                 raise TypeError(
                     'Warning: It looks like your installed version of the '
@@ -119,7 +142,7 @@ class RequestsClient(HTTPClient):
             # Would catch just requests.exceptions.RequestException, but can
             # also raise ValueError, RuntimeError, etc.
             self._handle_request_error(e)
-        return content, status_code
+        return content, status_code, result.headers
 
     def _handle_request_error(self, e):
         if isinstance(e, requests.exceptions.RequestException):
@@ -141,6 +164,23 @@ class RequestsClient(HTTPClient):
 class UrlFetchClient(HTTPClient):
     name = 'urlfetch'
 
+    def __init__(self, verify_ssl_certs=True, proxy=None, deadline=55):
+        super(UrlFetchClient, self).__init__(
+            verify_ssl_certs=verify_ssl_certs, proxy=proxy)
+
+        # no proxy support in urlfetch. for a patch, see:
+        # https://code.google.com/p/googleappengine/issues/detail?id=544
+        if proxy:
+            raise ValueError(
+                "No proxy support in urlfetch library. "
+                "Set pingpp.default_http_client to either RequestsClient, "
+                "PycurlClient, or Urllib2Client instance to use a proxy.")
+
+        self._verify_ssl_certs = verify_ssl_certs
+        # GAE requests time out after 60 seconds, so make sure to default
+        # to 55 seconds to allow for a slow Pingpp
+        self._deadline = deadline
+
     def request(self, method, url, headers, post_data=None):
         try:
             result = urlfetch.fetch(
@@ -151,15 +191,13 @@ class UrlFetchClient(HTTPClient):
                 # However, that's ok because the CA bundle they use recognizes
                 # api.pingxx.com.
                 validate_certificate=self._verify_ssl_certs,
-                # GAE requests time out after 60 seconds, so make sure we leave
-                # some time for the application to handle a slow Ping++
                 deadline=55,
                 payload=post_data
             )
         except urlfetch.Error as e:
             self._handle_request_error(e, url)
 
-        return result.content, result.status_code
+        return result.content, result.status_code, result.headers
 
     def _handle_request_error(self, e, url):
         if isinstance(e, urlfetch.InvalidURLError):
@@ -181,40 +219,79 @@ class UrlFetchClient(HTTPClient):
 class PycurlClient(HTTPClient):
     name = 'pycurl'
 
+    def __init__(self, verify_ssl_certs=True, proxy=None):
+        super(PycurlClient, self).__init__(
+            verify_ssl_certs=verify_ssl_certs, proxy=proxy)
+
+        # Initialize this within the object so that we can reuse connections.
+        self._curl = pycurl.Curl()
+
+        # need to urlparse the proxy, since PyCurl
+        # consumes the proxy url in small pieces
+        if self._proxy:
+            # now that we have the parser, get the proxy url pieces
+            proxy = self._proxy
+            for scheme in proxy:
+                proxy[scheme] = urlparse(proxy[scheme])
+
+    def parse_headers(self, data):
+        if '\r\n' not in data:
+            return {}
+        raw_headers = data.split('\r\n', 1)[1]
+        headers = email.message_from_string(raw_headers)
+        return dict((k.lower(), v) for k, v in six.iteritems(dict(headers)))
+
     def request(self, method, url, headers, post_data=None):
-        s = util.StringIO.StringIO()
-        curl = pycurl.Curl()
+        b = util.io.BytesIO()
+        rheaders = util.io.BytesIO()
+
+        self._curl.reset()
+
+        proxy = self._get_proxy(url)
+        if proxy:
+            if proxy.hostname:
+                self._curl.setopt(pycurl.PROXY, proxy.hostname)
+            if proxy.port:
+                self._curl.setopt(pycurl.PROXYPORT, proxy.port)
+            if proxy.username or proxy.password:
+                self._curl.setopt(
+                    pycurl.PROXYUSERPWD,
+                    "%s:%s" % (proxy.username, proxy.password))
 
         if method == 'get':
-            curl.setopt(pycurl.HTTPGET, 1)
+            self._curl.setopt(pycurl.HTTPGET, 1)
         elif method == 'post':
-            curl.setopt(pycurl.POST, 1)
-            curl.setopt(pycurl.POSTFIELDS, post_data)
+            self._curl.setopt(pycurl.POST, 1)
+            self._curl.setopt(pycurl.POSTFIELDS, post_data)
         else:
-            curl.setopt(pycurl.CUSTOMREQUEST, method.upper())
+            self._curl.setopt(pycurl.CUSTOMREQUEST, method.upper())
 
         # pycurl doesn't like unicode URLs
-        curl.setopt(pycurl.URL, util.utf8(url))
+        self._curl.setopt(pycurl.URL, util.utf8(url))
 
-        curl.setopt(pycurl.WRITEFUNCTION, s.write)
-        curl.setopt(pycurl.NOSIGNAL, 1)
-        curl.setopt(pycurl.CONNECTTIMEOUT, 30)
-        curl.setopt(pycurl.TIMEOUT, 80)
-        curl.setopt(pycurl.HTTPHEADER, ['%s: %s' % (k, v)
-                    for k, v in headers.iteritems()])
+        self._curl.setopt(pycurl.WRITEFUNCTION, b.write)
+        self._curl.setopt(pycurl.NOSIGNAL, 1)
+        self._curl.setopt(pycurl.CONNECTTIMEOUT, pingpp.connect_timeout)
+        self._curl.setopt(pycurl.TIMEOUT, pingpp.timeout)
+        self._curl.setopt(
+            pycurl.HTTPHEADER,
+            ['%s: %s' % (k, v) for k, v in six.iteritems(dict(headers))]
+        )
         if self._verify_ssl_certs:
-            curl.setopt(pycurl.CAINFO, os.path.join(
+            self._curl.setopt(pycurl.CAINFO, os.path.join(
                 os.path.dirname(__file__), 'data/ca-certificates.crt'))
         else:
-            curl.setopt(pycurl.SSL_VERIFYHOST, False)
+            self._curl.setopt(pycurl.SSL_VERIFYHOST, False)
 
         try:
-            curl.perform()
+            self._curl.perform()
         except pycurl.error as e:
             self._handle_request_error(e)
-        rbody = s.getvalue()
-        rcode = curl.getinfo(pycurl.RESPONSE_CODE)
-        return rbody, rcode
+        rbody = b.getvalue().decode('utf-8')
+        rcode = self._curl.getinfo(pycurl.RESPONSE_CODE)
+        headers = self.parse_headers(rheaders.getvalue().decode('utf-8'))
+
+        return rbody, rcode, headers
 
     def _handle_request_error(self, e):
         if e[0] in [pycurl.E_COULDNT_CONNECT,
@@ -234,32 +311,57 @@ class PycurlClient(HTTPClient):
         msg = textwrap.fill(msg) + "\n\n(Network error: " + e[1] + ")"
         raise error.APIConnectionError(msg)
 
+    def _get_proxy(self, url):
+        if self._proxy:
+            proxy = self._proxy
+            scheme = url.split(":")[0] if url else None
+            if scheme:
+                if scheme in proxy:
+                    return proxy[scheme]
+                scheme = scheme[0:-1]
+                if scheme in proxy:
+                    return proxy[scheme]
+        return None
+
 
 class Urllib2Client(HTTPClient):
-    if sys.version_info >= (3, 0):
-        name = 'urllib.request'
-    else:
-        name = 'urllib2'
+    name = 'urllib.request'
+
+    def __init__(self, verify_ssl_certs=True, proxy=None):
+        super(Urllib2Client, self).__init__(
+            verify_ssl_certs=verify_ssl_certs, proxy=proxy)
+        # prepare and cache proxy tied opener here
+        self._opener = None
+        if self._proxy:
+            proxy = urllib.request.ProxyHandler(self._proxy)
+            self._opener = urllib.request.build_opener(proxy)
 
     def request(self, method, url, headers, post_data=None):
-        if sys.version_info >= (3, 0) and isinstance(post_data, basestring):
+        if six.PY3 and isinstance(post_data, six.string_types):
             post_data = post_data.encode('utf-8')
 
-        req = urllib2.Request(url, post_data, headers)
+        req = urllib.request.Request(url, post_data, headers)
 
         if method not in ('get', 'post'):
             req.get_method = lambda: method.upper()
 
         try:
-            response = urllib2.urlopen(req)
+            # use the custom proxy tied opener, if any.
+            # otherwise, fall to the default urllib opener.
+            response = self._opener.open(req) \
+                if self._opener \
+                else urllib.request.urlopen(req)
             rbody = response.read()
             rcode = response.code
-        except urllib2.HTTPError as e:
+            headers = dict(response.info())
+        except urllib.error.HTTPError as e:
             rcode = e.code
             rbody = e.read()
-        except (urllib2.URLError, ValueError) as e:
+            headers = dict(e.info())
+        except (urllib.error.URLError, ValueError) as e:
             self._handle_request_error(e)
-        return rbody, rcode
+        lh = dict((k.lower(), v) for k, v in six.iteritems(dict(headers)))
+        return rbody, rcode, lh
 
     def _handle_request_error(self, e):
         msg = ("Unexpected error communicating with Ping++.")

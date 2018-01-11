@@ -15,10 +15,21 @@ python setup.py install
 ```
 
 ## 接入方法
+[示例代码](example/)
 
 ### 初始化
 ```python
 pingpp.api_key = 'YOUR_KEY'
+```
+
+### 开启日志
+```python
+pingpp.log = 'debug'  # 支持 debug 和 info
+```
+
+或者设置环境变量 `PINGPP_LOG`
+```bash
+export PINGPP_LOG=debug
 ```
 
 ### 设置请求签名密钥
@@ -37,6 +48,11 @@ pingpp.max_network_retries = 0
 当服务端返回 `502` 时，是否根据返回内容(阿里高防返回)来判断是否重试。`False` 表示只要是 `502`，全部重试。默认为 `True`。
 ```python
 pingpp.bad_gateway_match = False
+```
+
+重试延时设置（秒）
+```python
+pingpp.network_retry_delay = 0.5
 ```
 
 ### 支付
