@@ -8,7 +8,7 @@ from pingpp.api_resources.abstract.user_based_api_resource import (
 class CreateableUserBasedAPIResource(UserBasedAPIResource):
 
     @classmethod
-    def create(cls, api_key=None, app=None, user=None, **params):
+    def create(cls, user, api_key=None, app=None, **params):
         requestor = api_requestor.APIRequestor(api_key)
         url = cls.class_url(app, user)
         response, api_key = requestor.request('post', url, params)

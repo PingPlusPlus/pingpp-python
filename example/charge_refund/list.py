@@ -18,8 +18,8 @@ try:
     params = {
         'limit': 3,
     }
-    refunds = pingpp.Charge.refund_list('ch_W5CCe9uPujnDLqvbvH9OOS8S',
-                                        **params)
+    refunds = pingpp.Charge.list_refunds('ch_W5CCe9uPujnDLqvbvH9OOS8S',
+                                         **params)
     print(refunds)
 except Exception as e:
     raise

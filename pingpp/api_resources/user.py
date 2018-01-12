@@ -13,5 +13,5 @@ class User(CreateableAppBasedAPIResource,
     OBJECT_NAME = 'user'
 
     @classmethod
-    def update(cls, api_key=None, app=None, user=None, **params):
-        return cls.modify(user, api_key=api_key, app=app, **params)
+    def update(cls, id, api_key=None, app=None, **params):
+        return cls.modify(id, api_key=api_key, app=app, **params)

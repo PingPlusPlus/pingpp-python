@@ -41,13 +41,10 @@ except Exception as e:
 print("获取Charge对象列表:")
 try:
     params = {
-        'app': {
-            'id': app_id
-        },
+        'app[id]': app_id,
         'limit': 3,
     }
-    params = {}
-    charge_list = pingpp.Charge.list(**params)
-    print(charge_list)
+    charges = pingpp.Charge.list(**params)
+    print(charges)
 except Exception as e:
     print(e)

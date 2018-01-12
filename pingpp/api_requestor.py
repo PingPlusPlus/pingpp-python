@@ -265,7 +265,9 @@ class APIRequestor(object):
 
         from pingpp import private_key_path
         if private_key_path is not None:
-            pingpp.private_key = open(private_key_path, "r").read()
+            f = open(private_key_path, "r")
+            pingpp.private_key = f.read()
+            f.close()
             return pingpp.private_key.strip()
         return None
 
