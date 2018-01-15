@@ -6,18 +6,17 @@ import os
 '''
 优惠券接口
 '''
-# api_key 获取方式：登录 [Dashboard](https://dashboard.pingxx.com)->点击管理平台右上角公司名称->开发信息-> Secret Key
+
 pingpp.api_key = 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
-app_id = 'app_1Gqj58ynP0mHeX1q'
 pingpp.private_key_path = os.path.join(
     os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
     'your_rsa_private_key.pem')
 
-# app_id 支持全局配置
-pingpp.app_id = app_id
+# coupon 接口支持全局配置 app_id
+pingpp.app_id = "app_1Gqj58ynP0mHeX1q"
 
 params = {
-    "coupon_template": "300117082817355900186301",
+    "coupon_template": "300118011516532300004701",
     "metadata": {
         "key": "value"
     }
@@ -25,28 +24,31 @@ params = {
 
 try:
     # 创建优惠券
-    new_coupon = pingpp.Coupon.create(user="user_test_001", **params)
-    print(new_coupon)
+    coupon = pingpp.Coupon.create("user_001", **params)
+    print(coupon)
 
     # 查询
-    retr_coupon = pingpp.Coupon.retrieve(new_coupon.id, user="user_test_001")
-    print(retr_coupon)
+    coupon = pingpp.Coupon.retrieve("user_001", "300318011517060000088302")
+    print(coupon)
 
     # 获取列表
-    coupon_list = pingpp.Coupon.list(user="user_test_001")
+    coupon_list = pingpp.Coupon.list("user_001",
+                                     per_page=3)
     print(coupon_list)
 
     # 更新优惠券
     update_params = {
         "metadata": {
-            "key": "value"
+            "new_key": "new_value"
         }
     }
-    update_coupon = pingpp.Coupon.update(new_coupon.id, user="user_test_001", **update_params)
-    print(update_coupon)
+    updated_coupon = pingpp.Coupon.update("user_001",
+                                          coupon.id,
+                                          **update_params)
+    print(updated_coupon)
 
     # 删除优惠券
-    delete_coupon = pingpp.Coupon.delete(new_coupon.id, user="user_test_001")
-    print(delete_coupon)
+    deleted = pingpp.Coupon.delete("user_001", coupon.id)
+    print(deleted)
 except Exception as e:
-    print(e.http_body)
+    raise

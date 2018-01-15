@@ -7,7 +7,8 @@ import os
 pingpp.api_key = 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
 
 pingpp.private_key_path = os.path.join(
-    os.path.dirname(os.getcwd()), 'your_rsa_private_key.pem')
+    os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
+    'your_rsa_private_key.pem')
 
 '''
 分润接口示例
@@ -24,15 +25,17 @@ try:
     # 批量更新分润对象
     royalties = pingpp.Royalty.update(**params)
     print(royalties)
+
     # 查询分润对象列表
     params = {
         'page': 1,
         'per_page': 3
     }
     royalties = pingpp.Royalty.list(**params)
-    print royalties
+    print(royalties)
+
     # 查询分润对象
-    royalty = pingpp.Royalty.retrieve('410170320160900002')
+    royalty = pingpp.Royalty.retrieve('410180112171600002')
     print(royalty)
 except Exception as e:
     print(e)

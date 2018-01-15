@@ -9,7 +9,7 @@ from pingpp.api_resources.abstract.app_based_api_resource import (
 class UserBasedAPIResource(AppBasedAPIResource):
 
     @classmethod
-    def retrieve(cls, id, api_key=None, app=None, user=None, **params):
+    def retrieve(cls, user, id, api_key=None, app=None, **params):
         instance = cls(id, api_key, **params)
         instance.refresh(app, user)
         return instance

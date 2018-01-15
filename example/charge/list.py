@@ -18,8 +18,10 @@ pingpp.private_key_path = os.path.join(
 print("获取 Charge 对象列表:")
 try:
     params = {
-        'app[id]': app_id,
-        'limit': 1,
+        'app[id]': app_id,  # 必传
+        'limit': 3,
+        'paid': True,
+        'refunded': False,
     }
     charges = pingpp.Charge.list(**params)
     print(charges)

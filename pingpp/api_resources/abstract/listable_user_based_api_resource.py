@@ -12,7 +12,7 @@ class ListableUserBasedAPIResource(UserBasedAPIResource):
         return cls.list(*args, **params).auto_paging_iter()
 
     @classmethod
-    def list(cls, api_key=None, app=None, user=None, **params):
+    def list(cls, user, api_key=None, app=None, **params):
         requestor = api_requestor.APIRequestor(api_key,
                                                api_base=cls.api_base())
         url = cls.class_url(app, user)

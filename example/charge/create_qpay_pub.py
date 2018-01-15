@@ -31,33 +31,12 @@ try:
         order_no=str_random(20),  # 推荐使用 8-20 位，要求数字或字母，不允许其他字符
         amount=10000,  # 订单总金额, 人民币单位：分（如订单总金额为 1 元，此处请填 100）
         app=dict(id=app_id),
-        channel='cb_wx_pub',  # https://www.pingxx.com/api#支付渠道属性值
+        channel='qpay_pub',  # https://www.pingxx.com/api#支付渠道属性值
         currency='cny',
         client_ip='127.0.0.1',  # 发起支付请求客户端的 IP 地址，格式为 IPV4，如: 127.0.0.1
         subject='Your Subject',
         body='Your Body',
-        extra=dict(
-            # 必须，用户在商户 appid 下的唯一标识。
-            open_id='openidxxxxxxxxxxxx',
-            # 可选,只能填写此值 "no_credit"
-            limit_pay='no_credit',
-            # 商品列表 上送格式为:
-            #     [
-            #       {"goods_name":"iPhone6s 16G","goods_num":"1"},
-            #       {"goods_name":"iPhone6s 32G","goods_num":"1"}
-            #     ]
-            # 字段解释：goods_name:商品名称，goods_num:数量 1-5500
-            goods_list=[
-                dict(
-                    goods_name='iPhone6 16G',
-                    goods_num='1',
-                ),
-                dict(
-                    goods_name='iPhone6s 16G',
-                    goods_num='1',
-                )
-            ]
-        )
+        extra={}
     )
     print(charge)
 except Exception as e:

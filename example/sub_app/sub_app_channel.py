@@ -1,25 +1,24 @@
 # -*- coding: utf-8 -*-
 
-'''
-  Ping++ Server SDK 说明：
-  以下代码只是为了方便商户测试而提供的样例代码，商户可根据自己网站需求按照技术文档编写, 并非一定要使用该代码。
-  该代码仅供学习和研究 Ping++ SDK 使用，仅供参考。
-  子商户渠道设置接口示例
-'''
 import pingpp
 import os
 
-# api_key 获取方式：登录 [Dashboard](https://dashboard.pingxx.com)->点击管理平台右上角公司名称->企业设置->开发设置-> Secret Key
-api_key = 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
-# app_id 获取方式：登录 [Dashboard](https://dashboard.pingxx.com)->点击你创建的应用->应用首页->应用 ID(App ID)
-app_id = 'app_1Gqj58ynP0mHeX1q'
-# 设置 API Key
-pingpp.api_key = api_key
-# app_id 支持全局配置
-pingpp.app_id = app_id
+# 设置 API Key 该接口仅支持 Live Key
+pingpp.api_key = "sk_test_ibbTe5jLGCi5rzfH4OqPW9KC"
+# sub_app 渠道参数接口支持全局配置 app_id
+pingpp.app_id = "app_1Gqj58ynP0mHeX1q"
+
 pingpp.private_key_path = os.path.join(
     os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
     'your_rsa_private_key.pem')
+
+"""
+transfer_channel 接口与 channel 接口调用方法相同，方法为：
+    pingpp.SubApp.create_transfer_channel("SUB_APP_ID")
+    pingpp.SubApp.retrieve_transfer_channel("SUB_APP_ID", "CHANNEL")
+    pingpp.SubApp.update_transfer_channel("SUB_APP_ID", "CHANNEL")
+    pingpp.SubApp.delete_transfer_channel("SUB_APP_ID", "CHANNEL")
+"""
 
 try:
     # 创建子商户渠道参数
@@ -30,19 +29,58 @@ try:
         "params": {
             "alipay_account": "example@example.com",
             "alipay_app_id": "2016666666666666",
-            "alipay_app_public_key": "-----BEGIN PUBLIC KEY-----\nMIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgFYBbIo698oeToWRvAcqTw4TEZKa\nwKPIJrZ4pbZPooSriP6aqXIqRnM3734/gcJso24IZheM+sgz0An8+wN4bQ2Y/qO8\nSOh3HNDPzYuhR+CRajIOkGWUjxmqmi14zcLgWgURrgmdBIccM5BnRSFWdUWZTzez\ngl75CdmtXHmst7LNAgMBAAE=\n-----END PUBLIC KEY-----",
-            "alipay_app_public_key_rsa2": None,
-            "alipay_mer_app_private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC+KDkMaoEy1t+0\nN5tYCgsHJRDogpknCoUVA5aiGBl4E8SyC3gWRB9j6/FUCKYWobUnZoFur3XDd7Bs\ni57vJRQmEow1dYA3PIHAaLE3fzDTm1joJqExfctrS27AqxDWKcKxgDE8hcbhMCgN\nq24BHl+KVCSG7c3X1yY+lO393m7x6CVpSVPerx7PMaW28M+zRdIMHTLPG6v/0r6r\ny/yodjWKoZU7KlpQndgTzChIZIxb0hC578DAaTVBQv9lWenG84S3/s/kzO9j7YFR\nF3dn5XFx5LhzQdfctXmLmyqfUoL23FxDlI3BApAHjKCXdStZdWqFBeffdDK9WZ1/\n7qKigV93AgMBAAECggEABbXPgL/yAUTSkubYk1w52I0UZOcHElUOigMBkvyGR0TQ\ns0gE4yZIiweax5s64ZMZjYVWfaxnLOd7NMc8jpHeeQY1j6VnpED85HpAWBpJrREN\nKmt+i63rXd12BfMdHlFCt3HSCK87uadojICJXR88XzsHncWmWMTtMRPn0afMTRdO\nPwzTqVzRsavl6fuzhgufwMc9ZRJDcEZBAfXcvmGTj8xVqW7G3hsys7rXYODAgLdT\nThXaNaOqjm5VGaQE+oPHQsMiBbd+ojzA8swPMIiFfcCVoiI3tHx39iwhEsRnoHLU\n3IAPNBB7EG4AY1ljxSJFHHWkUu8jYZjXEfk6ethrgQKBgQDtRVkUpQqaz7HbGMfY\nSffopdkDMRdfBoRXXzEhJlLrIzEJ9JyIgWBZXo6M0oO30tZ7nQuCZCpy2NXRRA4h\nglHNFXobZeTpKc9C2ipBDZBzc5Pqn/MbeJ7aTIowXbuW91cYi/wjRfWX8G/E9PvK\ne8/JzNpRMYZhXOWruzY6zXElRQKBgQDNKtLBisA3L66stuzu2+MC19QIjWktbJkp\n33vOd/MrAXgotEkY+q3HsWXJzlEKdTuUaLVgP2IdtlwSCTcmHgd4WFIhp0tcYC56\n4XZR2l6db/8xX9CT+WYsbmdzHX6s7YJ+FJ0jLhVoXLKa8Eqp50SOJylnxnRH6k9v\nUjW+t4xHiwKBgQCnG3li1d5DLFZaNfjCN05X1z6hRdjs/z0EADIs473wh4eJOHNq\nnJwMNVF2kulb9S1EQFYTzpIq8tacnS7KoOsV4rNuSnRPVzf3IIoz6Oa8uUELNP3W\ncjyHCPMmn014RNldm3HIMgSHrzo44EXZ1RuCSDnWh2faeL/1FFRcU8cFdQKBgGxd\nPPoaxhGf7rus1pIGs+2Rf52Qy0fBv1g9gQ/5jQde/E9LgfxekyERUrj3bxh9+R0W\n/Q28DJ+y7Qhds7I/VCS9SYwa55P//SzMHwl2tFilif1TJUCzDsNTAPLtVjYSMMVV\nL/Yf5hC8PV3WoykATNZkWttEF7DQUmpy2o5ENiSnAoGBAMsuflxpK6Apkp35EpgF\n+72JCTbHUZxdFa8O4K6SHg3+gbxedJu4LrUpMu5LBDeNDlugqH4XqcPm1cl8Fozm\ntDwJfYhVb7FZ1bmkBu+FzjywnHIDzAOlErVqo4Abl1ch2t9kDkfuT5L+1JHpHX0K\nHSzBs2bCJaGq5Lm+K3je8GNr\n-----END PRIVATE KEY-----",
-            "alipay_mer_app_private_key_rsa2": None,
+            "alipay_app_public_key": None,
+            "alipay_app_public_key_rsa2": """
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAg3sPgpSdkpuy97Tfq3zA
+BUaiN6Egkx21Wf2gHV6c/vIpxHfJDXcKJgnaOmJpWBwsrRGiqC89T0efT2Z7RO9c
+D5BP8n3O8ok9xkxRhT/ptXjC8Ly5TmOha/p09qzhM0nczVEhBtisR7uAubl+RwKD
+/x4K/PEX4TRdjvxKHJhIBC0wJYWPANhPJJoCi9Mua6wP4kmUbrVXcs7V4pLA3yke
+DC+gg9vsdD8NYiJ7AQu169LxLanSF1r9pUkZIiOuRwwjwE/TwaKYAE22eLmBG70J
+TukYulv5BK2qLlZtNM1NQQTc2CdJBmF3r080x6UACddzRs0UkhinijlESpt+bHFj
+gwIDAQAB
+-----END PUBLIC KEY-----
+""",
+            "alipay_mer_app_private_key": None,
+            "alipay_mer_app_private_key_rsa2": """
+-----BEGIN PRIVATE KEY-----
+MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC3CN8dCG9bpWSR
+HMypeUAl9CspbovXJVVmqmkhMnalb+07t6bJB35KgYRnoi3iyArZDQiiSADIhWb8
+63zOPaiyg8SQCqwNRwqOedMPDNz/wyrmGncECvv4Oyp2PoW/1t6TPljfwZIJO5f0
+KZnVqsMqkr0F71eQ00FEZKR/xT+QkoJ74/BGmqs73NIe4wxg9QxLJJLFLsZxA9bW
+7qNAsiLIu9nPG7+8Heewqlrva3SmFXBVuZ48TeRH0HetKam3Vvl72KkylEb8s1iu
+09NUMBiFf77rA43hiUhDHKIYL2Gsf0MZKQksOcln5WCJWouQKH5Qk2iR5JDE6aEs
+i/pp0SKVAgMBAAECggEAObM+QrTKBiYZkfV2P2bN5ikXAjSrOOO4DGlkQubZqEWk
+j9LRbUZDddFmoBTsSjWt1cbaFe6E8LG9SbYi3hFqAPyxFoeGvZjLpyaYdoIjmS05
+dNia9FdSH2rnc+c52sQt3lUlR0SKeQakXIBQ0p7Gb8FafWh6Plmalaj0gqL36ub7
+dOhKXvXMtPaEWU913A50RwKYjWABRpP26XQ9mqURHpu4qEV8EUozo+HLjZ7ZiLwl
+9Jqpt/ISTdn2PYNqcTdy7zRlyKbWiMJwHQZxAcMrlf7pkoYgIkqNmjwBMII/jlsh
++Dm2e2/FutYrZhEuwSfDx/+qvSVPq2jV5K7fB9rHAQKBgQDzmDod9gPDl+5Ob4GI
+mz7opIMoNxbjZ8DMGogjzGwH6xSBYOHA/U4BiCmhAGLoGVXaxWES+HoNruS+AiRx
+weCHeV8tKc8/74TKnBUZThw3yc+Fjlvuf8+DhNA1M+G+NOCwCBDkckeIA+VHdNtq
+ofAvhqFTC1l46VmsCNc4Cq8XJQKBgQDAWx3cVgoYuXPG2NGwb5CQuVSMHElea2JM
+cNNA96LLEjsnztm8pERdIu8QSDgw3GCilweG66eytrSoechN9SRQuBYx33mNFBvb
+v0vpDsx9C3TAjkW/5AvylKUBCIqzeBTuH95RXp7sWvsdJDOIZFmnKkGNKfTafPAL
++Ec5vQj6sQKBgQDcJ+XGtFT8jrDbhN2+eAjoO98qFngCOQA/t275Y8TzdxxGPihq
+wsSgj86H65B4koVMvv0YJygwe7PSop8LjRz/c8t4RwQ/lZsffud2wmiwZx2+aEZg
+DHWhOQTwQJ6yyJmVnwSdY0eQ/2xWI6A3BHrOiU/+fRB1PflEiYzx4n4SXQKBgCFh
+bownDjd+L15JkBILOk4zKz3pRr4w6m0Tg0WZ89FDx6o/1j9LTmXPQydTMRUhmU99
+4BuE16RG2pEGGUGWEghD+e4Ltv9JhxAaYWT/YXMtwsQLrIUBYSVmsD++qLs+UnuE
+YkNCpVek7kD/YEYCDCDbT2bc6hXkao/ZNRsK9/zxAoGBAJLf2Ib+xuHLO9OQHG1R
+2gBMV/OdX62sjtdCyVfe4YM+q2GmGxjiAwOqx1vH7pccAMNB0lCpspcZXqeujC47
+hmZoNZWwW3qU3ye21oMRn+eWV43x3ldNeh7D2S8vAcC8ggZz8yDfugl3wl3R3S1/
+bBavQFwAoGqxxYGqi/8Qf+Dt
+-----END PRIVATE KEY-----
+""",
             "alipay_pid": "2088111111111111",
             "alipay_refund_nopwd": False,
-            "alipay_security_key": "a5srakrbci3nf1pracb52xcs9xlhu8gu",
-            "alipay_sign_type": "rsa",
-            "alipay_version": 1,
+            "alipay_security_key": "usrakrbci3nfa5x1pracb52xcs9lh8gu",
+            "alipay_sign_type": "rsa2",
+            "alipay_version": 2,
             "fee_rate": 80
         }
     }
-    channel = pingpp.Channel.create(app=pingpp.app_id, sub_app_id='app_ibXHGCzPaLe9fLqH', **params)
+    channel = pingpp.SubApp.create_channel('app_eyj5qX1ndWLdmXxH', **params)
     print('create sub_app channel:', channel)
 
     # 更新子商户渠道参数
@@ -51,30 +89,69 @@ try:
         "params": {
             "alipay_account": "example2@example.com",
             "alipay_app_id": "2016666666666668",
-            "alipay_app_public_key": "-----BEGIN PUBLIC KEY-----\nMIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgFYBbIo698oeToWRvAcqTw4TEZKa\nwKPIJrZ4pbZPooSriP6aqXIqRnM3734/gcJso24IZheM+sgz0An8+wN4bQ2Y/qO8\nSOh3HNDPzYuhR+CRajIOkGWUjxmqmi14zcLgWgURrgmdBIccM5BnRSFWdUWZTzez\ngl75CdmtXHmst7LNAgMBAAE=\n-----END PUBLIC KEY-----",
-            "alipay_app_public_key_rsa2": None,
-            "alipay_mer_app_private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC+KDkMaoEy1t+0\nN5tYCgsHJRDogpknCoUVA5aiGBl4E8SyC3gWRB9j6/FUCKYWobUnZoFur3XDd7Bs\ni57vJRQmEow1dYA3PIHAaLE3fzDTm1joJqExfctrS27AqxDWKcKxgDE8hcbhMCgN\nq24BHl+KVCSG7c3X1yY+lO393m7x6CVpSVPerx7PMaW28M+zRdIMHTLPG6v/0r6r\ny/yodjWKoZU7KlpQndgTzChIZIxb0hC578DAaTVBQv9lWenG84S3/s/kzO9j7YFR\nF3dn5XFx5LhzQdfctXmLmyqfUoL23FxDlI3BApAHjKCXdStZdWqFBeffdDK9WZ1/\n7qKigV93AgMBAAECggEABbXPgL/yAUTSkubYk1w52I0UZOcHElUOigMBkvyGR0TQ\ns0gE4yZIiweax5s64ZMZjYVWfaxnLOd7NMc8jpHeeQY1j6VnpED85HpAWBpJrREN\nKmt+i63rXd12BfMdHlFCt3HSCK87uadojICJXR88XzsHncWmWMTtMRPn0afMTRdO\nPwzTqVzRsavl6fuzhgufwMc9ZRJDcEZBAfXcvmGTj8xVqW7G3hsys7rXYODAgLdT\nThXaNaOqjm5VGaQE+oPHQsMiBbd+ojzA8swPMIiFfcCVoiI3tHx39iwhEsRnoHLU\n3IAPNBB7EG4AY1ljxSJFHHWkUu8jYZjXEfk6ethrgQKBgQDtRVkUpQqaz7HbGMfY\nSffopdkDMRdfBoRXXzEhJlLrIzEJ9JyIgWBZXo6M0oO30tZ7nQuCZCpy2NXRRA4h\nglHNFXobZeTpKc9C2ipBDZBzc5Pqn/MbeJ7aTIowXbuW91cYi/wjRfWX8G/E9PvK\ne8/JzNpRMYZhXOWruzY6zXElRQKBgQDNKtLBisA3L66stuzu2+MC19QIjWktbJkp\n33vOd/MrAXgotEkY+q3HsWXJzlEKdTuUaLVgP2IdtlwSCTcmHgd4WFIhp0tcYC56\n4XZR2l6db/8xX9CT+WYsbmdzHX6s7YJ+FJ0jLhVoXLKa8Eqp50SOJylnxnRH6k9v\nUjW+t4xHiwKBgQCnG3li1d5DLFZaNfjCN05X1z6hRdjs/z0EADIs473wh4eJOHNq\nnJwMNVF2kulb9S1EQFYTzpIq8tacnS7KoOsV4rNuSnRPVzf3IIoz6Oa8uUELNP3W\ncjyHCPMmn014RNldm3HIMgSHrzo44EXZ1RuCSDnWh2faeL/1FFRcU8cFdQKBgGxd\nPPoaxhGf7rus1pIGs+2Rf52Qy0fBv1g9gQ/5jQde/E9LgfxekyERUrj3bxh9+R0W\n/Q28DJ+y7Qhds7I/VCS9SYwa55P//SzMHwl2tFilif1TJUCzDsNTAPLtVjYSMMVV\nL/Yf5hC8PV3WoykATNZkWttEF7DQUmpy2o5ENiSnAoGBAMsuflxpK6Apkp35EpgF\n+72JCTbHUZxdFa8O4K6SHg3+gbxedJu4LrUpMu5LBDeNDlugqH4XqcPm1cl8Fozm\ntDwJfYhVb7FZ1bmkBu+FzjywnHIDzAOlErVqo4Abl1ch2t9kDkfuT5L+1JHpHX0K\nHSzBs2bCJaGq5Lm+K3je8GNr\n-----END PRIVATE KEY-----",
-            "alipay_mer_app_private_key_rsa2": None,
+            "alipay_app_public_key": None,
+            "alipay_app_public_key_rsa2": """
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAg3sPgpSdkpuy97Tfq3zA
+BUaiN6Egkx21Wf2gHV6c/vIpxHfJDXcKJgnaOmJpWBwsrRGiqC89T0efT2Z7RO9c
+D5BP8n3O8ok9xkxRhT/ptXjC8Ly5TmOha/p09qzhM0nczVEhBtisR7uAubl+RwKD
+/x4K/PEX4TRdjvxKHJhIBC0wJYWPANhPJJoCi9Mua6wP4kmUbrVXcs7V4pLA3yke
+DC+gg9vsdD8NYiJ7AQu169LxLanSF1r9pUkZIiOuRwwjwE/TwaKYAE22eLmBG70J
+TukYulv5BK2qLlZtNM1NQQTc2CdJBmF3r080x6UACddzRs0UkhinijlESpt+bHFj
+gwIDAQAB
+-----END PUBLIC KEY-----
+""",
+            "alipay_mer_app_private_key": None,
+            "alipay_mer_app_private_key_rsa2": """
+-----BEGIN PRIVATE KEY-----
+MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC3CN8dCG9bpWSR
+HMypeUAl9CspbovXJVVmqmkhMnalb+07t6bJB35KgYRnoi3iyArZDQiiSADIhWb8
+63zOPaiyg8SQCqwNRwqOedMPDNz/wyrmGncECvv4Oyp2PoW/1t6TPljfwZIJO5f0
+KZnVqsMqkr0F71eQ00FEZKR/xT+QkoJ74/BGmqs73NIe4wxg9QxLJJLFLsZxA9bW
+7qNAsiLIu9nPG7+8Heewqlrva3SmFXBVuZ48TeRH0HetKam3Vvl72KkylEb8s1iu
+09NUMBiFf77rA43hiUhDHKIYL2Gsf0MZKQksOcln5WCJWouQKH5Qk2iR5JDE6aEs
+i/pp0SKVAgMBAAECggEAObM+QrTKBiYZkfV2P2bN5ikXAjSrOOO4DGlkQubZqEWk
+j9LRbUZDddFmoBTsSjWt1cbaFe6E8LG9SbYi3hFqAPyxFoeGvZjLpyaYdoIjmS05
+dNia9FdSH2rnc+c52sQt3lUlR0SKeQakXIBQ0p7Gb8FafWh6Plmalaj0gqL36ub7
+dOhKXvXMtPaEWU913A50RwKYjWABRpP26XQ9mqURHpu4qEV8EUozo+HLjZ7ZiLwl
+9Jqpt/ISTdn2PYNqcTdy7zRlyKbWiMJwHQZxAcMrlf7pkoYgIkqNmjwBMII/jlsh
++Dm2e2/FutYrZhEuwSfDx/+qvSVPq2jV5K7fB9rHAQKBgQDzmDod9gPDl+5Ob4GI
+mz7opIMoNxbjZ8DMGogjzGwH6xSBYOHA/U4BiCmhAGLoGVXaxWES+HoNruS+AiRx
+weCHeV8tKc8/74TKnBUZThw3yc+Fjlvuf8+DhNA1M+G+NOCwCBDkckeIA+VHdNtq
+ofAvhqFTC1l46VmsCNc4Cq8XJQKBgQDAWx3cVgoYuXPG2NGwb5CQuVSMHElea2JM
+cNNA96LLEjsnztm8pERdIu8QSDgw3GCilweG66eytrSoechN9SRQuBYx33mNFBvb
+v0vpDsx9C3TAjkW/5AvylKUBCIqzeBTuH95RXp7sWvsdJDOIZFmnKkGNKfTafPAL
++Ec5vQj6sQKBgQDcJ+XGtFT8jrDbhN2+eAjoO98qFngCOQA/t275Y8TzdxxGPihq
+wsSgj86H65B4koVMvv0YJygwe7PSop8LjRz/c8t4RwQ/lZsffud2wmiwZx2+aEZg
+DHWhOQTwQJ6yyJmVnwSdY0eQ/2xWI6A3BHrOiU/+fRB1PflEiYzx4n4SXQKBgCFh
+bownDjd+L15JkBILOk4zKz3pRr4w6m0Tg0WZ89FDx6o/1j9LTmXPQydTMRUhmU99
+4BuE16RG2pEGGUGWEghD+e4Ltv9JhxAaYWT/YXMtwsQLrIUBYSVmsD++qLs+UnuE
+YkNCpVek7kD/YEYCDCDbT2bc6hXkao/ZNRsK9/zxAoGBAJLf2Ib+xuHLO9OQHG1R
+2gBMV/OdX62sjtdCyVfe4YM+q2GmGxjiAwOqx1vH7pccAMNB0lCpspcZXqeujC47
+hmZoNZWwW3qU3ye21oMRn+eWV43x3ldNeh7D2S8vAcC8ggZz8yDfugl3wl3R3S1/
+bBavQFwAoGqxxYGqi/8Qf+Dt
+-----END PRIVATE KEY-----
+""",
             "alipay_pid": "2088111111111112",
             "alipay_refund_nopwd": False,
             "alipay_security_key": "a5srakrbci3nf1pracb52xcs9xlhu8ga",
-            "alipay_sign_type": "rsa",
-            "alipay_version": 1,
+            "alipay_sign_type": "rsa2",
+            "alipay_version": 2,
             "fee_rate": 80
         },
         'banned': False,
     }
-    channel = pingpp.Channel.update(app=pingpp.app_id, sub_app_id='app_ibXHGCzPaLe9fLqH', channel='alipay',
-                                    **updateParams)
-    print('update sub_app channel :', channel)
+    channel = pingpp.SubApp.update_channel('app_eyj5qX1ndWLdmXxH',
+                                           'alipay',
+                                           **updateParams)
+    print('update sub_app channel:', channel)
 
     # 查询子商户渠道参数
-    channel_list = pingpp.Channel.retrieve(app=pingpp.app_id, sub_app_id='app_ibXHGCzPaLe9fLqH', channel='alipay')
-    print('retrieve sub_app channel list:', channel_list)
+    channel = pingpp.SubApp.retrieve_channel('app_eyj5qX1ndWLdmXxH', 'alipay')
+    print('retrieve sub_app channel:', channel)
 
     # 删除子商户渠道参数
-    channel_del = pingpp.Channel.delete(app=pingpp.app_id, sub_app_id='app_ibXHGCzPaLe9fLqH', channel='alipay')
-    print('delete sub_app channel:', channel_del)
-
+    deleted = pingpp.SubApp.delete_channel('app_eyj5qX1ndWLdmXxH', 'alipay')
+    print('delete sub_app channel:', deleted)
 except Exception as e:
-    print(e.http_body)
+    raise

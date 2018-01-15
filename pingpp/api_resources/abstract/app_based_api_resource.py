@@ -31,7 +31,7 @@ class AppBasedAPIResource(APIResource):
         if not app:
             from pingpp import app_id
             app = app_id
-        return "/v1/apps/%s/%ss" % (app, cls_name)
+        return "/v1/apps/%s/%ss" % (quote_plus(app), cls_name)
 
     def instance_url(self, app=None):
         id = self.get('id')
@@ -43,5 +43,5 @@ class AppBasedAPIResource(APIResource):
 
         id = util.utf8(id)
         base = self.class_url(app)
-        extn = quote_plus(id)
+        extn = id if self.class_name() == "user" else quote_plus(id)
         return "%s/%s" % (base, extn)

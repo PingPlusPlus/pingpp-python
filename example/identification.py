@@ -8,15 +8,14 @@ API文档页面https://www.pingxx.com/api#请求认证接口
 import pingpp
 import os
 
-# api_key 获取方式：登录 [Dashboard](https://dashboard.pingxx.com)->点击管理平台右上角公司名称->开发信息-> Secret Key
-api_key = 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
-# app_id 获取方式：登录 [Dashboard](https://dashboard.pingxx.com)->点击你创建的应用->应用首页->应用 ID(App ID)
-app_id = 'app_1Gqj58ynP0mHeX1q '
+app_id = 'app_1Gqj58ynP0mHeX1q'
 # 设置 API Key
-pingpp.api_key = api_key
+# 该接口仅支持 Live Key
+pingpp.api_key = "sk_test_ibbTe5jLGCi5rzfH4OqPW9KC"
 pingpp.private_key_path = os.path.join(
     os.path.dirname(__file__), 'your_rsa_private_key.pem')
-req_params = {
+
+params = {
     "app": app_id,
     "data": {
         "id_name": "张三",
@@ -26,8 +25,7 @@ req_params = {
     "type": "bank_card"
 }
 try:
-    identification = pingpp.Identification.create(**req_params)
-    print "identification  instance \n", identification
-
+    identification = pingpp.Identification.create(**params)
+    print("identification result\n", identification)
 except Exception as e:
-    print e
+    raise

@@ -18,6 +18,18 @@ class CouponTemplate(CreateableAppBasedAPIResource,
         return 'coupon_template'
 
     @classmethod
+    def update(cls, sid, api_key=None, app=None, **params):
+        return cls.modify(sid, api_key=api_key, app=None, **params)
+
+    @classmethod
+    def delete(cls, id, app=None, api_key=None, **params):
+        requestor = api_requestor.APIRequestor(api_key)
+        url = "%s/%s" % (cls.class_url(app),
+                         quote_plus(util.utf8(id)))
+        response, api_key = requestor.request('delete', url, params)
+        return util.convert_to_pingpp_object(response, api_key)
+
+    @classmethod
     def create_coupons(cls, id, api_key=None, app=None, **params):
         requestor = api_requestor.APIRequestor(api_key)
         url = "%s/%s/coupons" % (cls.class_url(app),

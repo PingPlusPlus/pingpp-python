@@ -188,7 +188,7 @@ pingpp.BatchRefund.list()
 ## Batch Transfers 批量企业付款
 ### 创建批量付款
 ```python
-req_params = {
+params = {
     "app": 'APP_ID',
     "batch_no": "batchrefund2010801001",
     "description": "Batch refund description.",
@@ -197,7 +197,7 @@ req_params = {
         "ch_fdOmHaLmLmr1GOD4qn1dS8e5"
     ]
 }
-pingpp.BatchTransfer.create(**req_params)
+pingpp.BatchTransfer.create(**params)
 ```
 
 ### 查询批量付款
@@ -207,12 +207,7 @@ pingpp.BatchTransfer.retrieve('BATCH_TRANSFER_ID')
 
 ### 查询批量付款列表
 ```python
-pingpp.BatchTransfer.list()
-```
-
-### 更新批量付款对象 (仅unionpay渠道支持)
-```python
-pingpp.BatchTransfer.cancel('BATCH_TRANSFER_ID')
+pingpp.BatchTransfer.list(app="APP_ID", per_page=3)
 ```
 
 ## 身份证银行卡信息认证接口
@@ -448,7 +443,7 @@ pingpp.BalanceTransaction.list(app="APP_ID", **params)
 
 ### 余额转账
 ```python
-pingpp.BalanceTransfer.create(app="APP_ID", user="user_001")
+pingpp.BalanceTransfer.create(app="APP_ID", **params)
 ```
 
 ### 余额提现申请
@@ -457,7 +452,7 @@ params = {
     "user": "user_001",
     "amount": 20000,
     "user_fee": 50,
-    "description": "test232description",
+    "description": "Description",
     "extra": {
         "card_number": "6225210207073918",
         "user_name": "姓名",
@@ -495,7 +490,7 @@ pingpp.Withdrawal.list(app="APP_ID", **params)
 params = {
     "coupon_template": "300116082415452100000700",
 }
-pingpp.Coupon.create(user="user_test_001", **params)
+pingpp.Coupon.create("user_001", **params)
 ```
 
 ### 更新优惠券
@@ -506,22 +501,22 @@ params = {
         "key": "value"
     }
 }
-pingpp.Coupon.update("coupon_id_001", user="user_test_001", **params)
+pingpp.Coupon.update("user_001", "coupon_id_001", **params)
 ```
 
 ### 删除优惠券
 ```python
-delete_coupon = pingpp.Coupon.delete("coupon_id_001", user="user_test_001")
+pingpp.Coupon.delete("user_001", "coupon_id_001")
 ```
 
 ### 查询优惠券
 ```python
-pingpp.Coupon.retrieve("coupon_id_001", user="user_test_001")
+pingpp.Coupon.retrieve("user_001", "coupon_id_001")
 ```
 
 ### 查询用户优惠券列表
 ```python
-pingpp.Coupon.list(user="user_test_001")
+pingpp.Coupon.list("user_001", per_page=3)
 ```
 
 ## 优惠券模板
@@ -537,17 +532,17 @@ params = {
     },
     "expiration": null
 }
-pingpp.CouponTemplate.create(app=app_id, **params)
+pingpp.CouponTemplate.create(**params)
 ```
 
 ### 获取优惠券模板列表
 ```python
-pingpp.CouponTemplate.list()
+pingpp.CouponTemplate.list(per_page=3)
 ```
 
 ### 获取优惠券模板明细
 ```python
-pingpp.CouponTemplate.retrieve("coupon_id_001", user="user_test_001")
+pingpp.CouponTemplate.retrieve("COUPON_TMPL_001")
 ```
 
 ### 更新优惠券模板
@@ -562,12 +557,12 @@ pingpp.CouponTemplate.delete("COUPON_TMPL_001")
 
 ### 查询优惠券模板下的优惠券列表
 ```python
-pingpp.CouponTemplate.retrieve_coupons(coupon_tmpl="COUPON_TMPL_001")
+pingpp.CouponTemplate.retrieve_coupons("COUPON_TMPL_001", per_page=3)
 ```
 
 ### 创建单个优惠券
 ```python
-pingpp.CouponTemplate.create_coupons(app=app_id, coupon_tmpl="COUPON_TMPL_001")
+pingpp.CouponTemplate.create_coupons("COUPON_TMPL_001", **params)
 ```
 
 ### 创建批量付款
@@ -626,18 +621,22 @@ params = {
 }
 sub_app = pingpp.SubApp.create(app="APP_ID", **params)
 ```
+
 ### 查询子商户
 ```python
-pingpp.SubApp.retrieve(app="APP_ID", id='app_1Gqj58ynP0mHeX1q')
+pingpp.SubApp.retrieve("app_1Gqj58ynP0mHeX1q", app="APP_ID")
 ```
+
 ### 删除子商户
 ```python
-pingpp.SubApp.delete(app=app_id, id='app_1Gqj58ynP0mHeX1q')
+pingpp.SubApp.delete("app_1Gqj58ynP0mHeX1q", app="APP_ID")
 ```
+
 ### 查询子商户列表
 ```python
 pingpp.SubApp.list(app="APP_ID")
 ```
+
 ### 配置子商户渠道参数
 ```python
 params = {
@@ -659,8 +658,9 @@ params = {
         "fee_rate": 80
     }
 }
-pingpp.Channel.create(app="APP_ID", sub_app_id='app_1Gqj58ynP0mHeX1q', **params)
+pingpp.SubApp.create_channel("app_1Gqj58ynP0mHeX1q", app="APP_ID", **params)
 ```
+
 ### 更新子商户渠道参数
 ```python
 updateParams = {
@@ -681,17 +681,16 @@ updateParams = {
     },
     'banned': False
 }
-pingpp.Channel.update(app="APP_ID", sub_app_id='app_1Gqj58ynP0mHeX1q', channel='alipay',
-                                    **updateParams)
+pingpp.SubApp.update_channel("app_1Gqj58ynP0mHeX1q", 'alipay', **updateParams)
 ```
 ### 删除子商户渠道参数
 ```python
-pingpp.Channel.delete(app="APP_ID", sub_app_id='app_1Gqj58ynP0mHeX1q', channel='alipay')
+pingpp.SubApp.delete_channel('app_1Gqj58ynP0mHeX1q', 'alipay')
 ```
 
 ### 获取子商户渠道参数
 ```python
-pingpp.Channel.retrieve(app="APP_ID", sub_app_id='app_1Gqj58ynP0mHeX1q', channel='alipay')
+pingpp.SubApp.retrieve_channel('app_1Gqj58ynP0mHeX1q', 'alipay')
 ```
 
 ### 创建结算账号
@@ -708,7 +707,8 @@ params = {
     }
 
 }
-pingpp.SettleAccount.create(user='user_001', app="APP_ID", **params)
+pingpp.SettleAccount.create('user_001', app="APP_ID", **params)
+
 # 创建结算账号-支付宝渠道
 params = {
     "channel": "alipay",
@@ -719,7 +719,8 @@ params = {
     }
 
 }
-pingpp.SettleAccount.create(user='user_001', app="APP_ID", **params)
+pingpp.SettleAccount.create('user_001', app="APP_ID", **params)
+
 # 创建结算账号-微信渠道
 params = {
     "channel": "wx_pub",
@@ -730,23 +731,24 @@ params = {
         "force_check": False
     }
 }
-pingpp.SettleAccount.create(user='user_001', app="APP_ID", **params)
+pingpp.SettleAccount.create('user_001', app="APP_ID", **params)
 ```
 
 ### 查询结算账号
 ```python
-pingpp.SettleAccount.retrieve(app="APP_ID", user='test_user_003', id='SETTLE_ACCOUNT_ID')
+pingpp.SettleAccount.retrieve('user_001', 'SETTLE_ACCOUNT_ID', app="APP_ID")
 ```
 
 ### 删除结算账号
 ```python
-pingpp.SettleAccount.delete(app="APP_ID", user='test_user_003', id='320117032014485200000201')
+pingpp.SettleAccount.delete('user_001', 'SETTLE_ACCOUNT_ID', app="APP_ID")
 ```
 
 ### 查询结算账号列表
 ```python
-pingpp.SettleAccount.list(app="APP_ID", user='test_user_003')
+pingpp.SettleAccount.list('user_001', app="APP_ID")
 ```
+
 ### 批量更新分润对象
 ```python
 params = {
@@ -757,20 +759,23 @@ params = {
     "method": "manual",
     "description": "Your description"
 }
-pingpp.Royaltie.update(**params)
+pingpp.Royalty.update(**params)
 ```
+
 ### 查询分润对象
 ```python
-pingpp.Royaltie.retrieve('410170320160900002')
+pingpp.Royalty.retrieve('ROYALTY_ID')
 ```
+
 ### 查询分润对象列表
 ```python
 params = {
     'page': 1,
-    'per_page': 15
+    'per_page': 3
 }
-pingpp.Royaltie.list(**params)
+pingpp.Royalty.list(**params)
 ```
+
 ### 创建分润结算对象
 ```python
 params = {
@@ -784,21 +789,25 @@ params = {
 }
 pingpp.RoyaltySettlement.create(**params)
 ```
+
 ### 查询分润结算对象
 ```python
-pingpp.RoyaltySettlement.retrieve(id='430170320150300001')
+pingpp.RoyaltySettlement.retrieve('ROYALTY_SETTLEMENT_ID')
 ```
+
 ### 更新分润结算对象
 ```python
 # 更新分润结算对象-确认
-pingpp.RoyaltySettlement.confirm(id='430170320150300001')
+pingpp.RoyaltySettlement.confirm('ROYALTY_SETTLEMENT_ID')
 # 更新分润结算对象-取消
-pingpp.RoyaltySettlement.cancel(id='430170320150300001')
+pingpp.RoyaltySettlement.cancel('ROYALTY_SETTLEMENT_ID')
 ```
+
 ### 查询分润结算列表
 ```python
 pingpp.RoyaltySettlement.list(**params)
 ```
+
 ### 查询分润明细
 ```python
 params = dict(
@@ -807,10 +816,10 @@ params = dict(
 )
 pingpp.RoyaltyTransaction.list(**params)
 ```
+
 ### 查询分润明细列表
 ```python
-pingpp.RoyaltyTransaction.retrieve(id='440170320155300006')
+pingpp.RoyaltyTransaction.retrieve('ROYALTY_TRANSACTION_ID')
 ```
-
 
 **详细信息请参考 [API 文档](https://pingxx.com/document/api?python)。**

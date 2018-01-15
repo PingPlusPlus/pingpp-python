@@ -16,7 +16,7 @@ class Coupon(CreateableUserBasedAPIResource,
     OBJECT_NAME = 'coupon'
 
     @classmethod
-    def delete(cls, id, app=None, api_key=None, user=None, **params):
+    def delete(cls, user, id, app=None, api_key=None, **params):
         requestor = api_requestor.APIRequestor(api_key)
         url = "%s/%s" % (cls.class_url(app, user),
                          quote_plus(util.utf8(id)))
@@ -24,5 +24,5 @@ class Coupon(CreateableUserBasedAPIResource,
         return util.convert_to_pingpp_object(response, api_key)
 
     @classmethod
-    def update(cls, id, api_key=None, app=None, user=None, **params):
+    def update(cls, user, id, api_key=None, app=None, **params):
         return cls.modify(id, api_key=api_key, app=app, user=user, **params)
