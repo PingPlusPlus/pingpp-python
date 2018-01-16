@@ -349,7 +349,7 @@ recharge = pingpp.Recharge.create(**params)
 ```
 ### 用户充值查询
 ```python
-pingpp.Recharge.retrieve("RECHARGE_ID"))
+pingpp.Recharge.retrieve("RECHARGE_ID")
 ```
 ### 用户充值列表
 ```python
@@ -357,7 +357,7 @@ params = {
     "page": 1,
     "per_page": 3,
 }
-pingpp.Recharge.list(**params))
+pingpp.Recharge.list(**params)
 ```
 
 ### 用户充值退款创建
@@ -366,7 +366,7 @@ params = {
     "description": "Your description",
     "metadata": {}
 }
-pingpp.Recharge.refund("RECHARGE_ID", **params))
+pingpp.Recharge.refund("RECHARGE_ID", **params)
 ```
 
 ### 用户充值退款查询
