@@ -79,7 +79,7 @@ params = {
     "app": {"id": "APP_ID"},
     "limit": 3,
 }
-pingpp.Charge.list(params)
+pingpp.Charge.list(**params)
 ```
 
 ### 线下渠道交易撤销
@@ -366,7 +366,7 @@ params = {
     "description": "Your description",
     "metadata": {}
 }
-pingpp.Recharge.refund("RECHARGE_ID", **refund_param))
+pingpp.Recharge.refund("RECHARGE_ID", **params))
 ```
 
 ### 用户充值退款查询
@@ -810,10 +810,10 @@ pingpp.RoyaltySettlement.list(**params)
 
 ### 查询分润明细
 ```python
-params = dict(
-    page = 1,
-    per_page = 15
-)
+params = {
+    "page": 1,
+    "per_page": 15
+}
 pingpp.RoyaltyTransaction.list(**params)
 ```
 
