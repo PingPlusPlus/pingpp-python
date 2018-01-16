@@ -557,7 +557,7 @@ pingpp.CouponTemplate.delete("COUPON_TMPL_001")
 
 ### 查询优惠券模板下的优惠券列表
 ```python
-pingpp.CouponTemplate.retrieve_coupons("COUPON_TMPL_001", per_page=3)
+pingpp.CouponTemplate.list_coupons("COUPON_TMPL_001", per_page=3)
 ```
 
 ### 创建单个优惠券
