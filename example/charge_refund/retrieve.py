@@ -16,7 +16,7 @@ pingpp.private_key_path = os.path.join(
 
 print("查询 Refund 对象:")
 try:
-    refund = pingpp.Charge.refund_retrieve('ch_Ti1eD0WP08eDPSSqnTOmLWHK',
+    refund = pingpp.Charge.retrieve_refund('ch_Ti1eD0WP08eDPSSqnTOmLWHK',
                                            're_irb1COq1ezTCXP0WfPervbHK')
     print(refund)
 except Exception as e:
