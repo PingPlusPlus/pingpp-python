@@ -79,8 +79,9 @@ def new_default_http_client(*args, **kwargs):
 
 class HTTPClient(object):
 
-    def __init__(self, verify_ssl_certs=True, proxy=None):
+    def __init__(self, verify_ssl_certs=True, proxy=None, ca_bundle=None):
         self._verify_ssl_certs = verify_ssl_certs
+        self._ca_bundle = ca_bundle
         if proxy:
             if type(proxy) is str:
                 proxy = {"http": proxy, "https": proxy}
@@ -108,8 +109,7 @@ class RequestsClient(HTTPClient):
         kwargs = {}
 
         if self._verify_ssl_certs:
-            kwargs['verify'] = os.path.join(
-                os.path.dirname(__file__), 'data/ca-certificates.crt')
+            kwargs['verify'] = util.ca_bundle_path(self._ca_bundle)
         else:
             kwargs['verify'] = False
 
@@ -278,8 +278,8 @@ class PycurlClient(HTTPClient):
             ['%s: %s' % (k, v) for k, v in six.iteritems(dict(headers))]
         )
         if self._verify_ssl_certs:
-            self._curl.setopt(pycurl.CAINFO, os.path.join(
-                os.path.dirname(__file__), 'data/ca-certificates.crt'))
+            self._curl.setopt(pycurl.CAINFO,
+                              util.ca_bundle_path(self._ca_bundle))
         else:
             self._curl.setopt(pycurl.SSL_VERIFYHOST, False)
 

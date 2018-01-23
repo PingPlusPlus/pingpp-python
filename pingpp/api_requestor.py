@@ -75,9 +75,10 @@ class APIRequestor(object):
 
         from pingpp import verify_ssl_certs as verify
         from pingpp import proxy
+        from pingpp import ca_bundle
 
         self._client = client or http_client.new_default_http_client(
-            verify_ssl_certs=verify, proxy=proxy)
+            verify_ssl_certs=verify, proxy=proxy, ca_bundle=ca_bundle)
 
     def request(self, method, url, params=None, headers=None):
         rbody, rcode, rheaders, my_api_key = self.request_raw(

@@ -19,6 +19,7 @@ connect_timeout = 30
 timeout = 80
 proxy = None
 network_retry_delay = 0.5
+ca_bundle = None
 
 # Set to either 'debug' or 'info', controls console logging
 log = None

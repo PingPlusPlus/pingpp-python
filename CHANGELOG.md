@@ -5,6 +5,8 @@
     - 去除已废除的方法
     - charge 退款调用方式变更
     - `ca-certificates.crt` 文件更新
+- 新增
+    - 自定义 CA 证书路径 `pingpp.ca_bundle = "/path/to/cacert.pem"`
 
 ## 2.4.0
 - 修改

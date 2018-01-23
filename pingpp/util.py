@@ -237,3 +237,11 @@ def convert_array_to_dict(arr):
         return d
     else:
         return arr
+
+
+def ca_bundle_path(ca_bundle):
+    if ca_bundle and os.path.exists(os.path.realpath(ca_bundle)):
+        return os.path.realpath(ca_bundle)
+    else:
+        return os.path.join(
+            os.path.dirname(__file__), 'data/ca-certificates.crt')
