@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import urllib
 import hashlib
 
 from pingpp import http_client, util
+from pingpp.six.moves.urllib.parse import urlencode, quote_plus
 
 
 class WxpubOauth:
@@ -45,7 +45,7 @@ class WxpubOauth:
         """
         data = []
         data.append('appid=' + app_id)
-        data.append('redirect_uri=' + urllib.quote(redirect_url, ''))
+        data.append('redirect_uri=' + quote_plus(redirect_url, ''))
         data.append('response_type=code')
         data.append('scope=' +
                     ('snsapi_userinfo' if more_info else 'snsapi_base'))
@@ -69,7 +69,7 @@ class WxpubOauth:
         data['secret'] = app_secret
         data['code'] = code
         data['grant_type'] = 'authorization_code'
-        query_str = urllib.urlencode(data)
+        query_str = urlencode(data)
 
         return "https://api.weixin.qq.com/sns/oauth2/access_token?" + query_str
 
@@ -85,7 +85,7 @@ class WxpubOauth:
         data['appid'] = app_id
         data['secret'] = app_secret
         data['grant_type'] = 'client_credential'
-        query_str = urllib.urlencode(data)
+        query_str = urlencode(data)
         access_token_url = \
             'https://api.weixin.qq.com/cgi-bin/token?' + query_str
         client = http_client.new_default_http_client()
@@ -97,7 +97,7 @@ class WxpubOauth:
         data = dict()
         data['access_token'] = rbody['access_token']
         data['type'] = 'jsapi'
-        query_str = urllib.urlencode(data)
+        query_str = urlencode(data)
         jsapi_ticket_url = \
             'https://api.weixin.qq.com/cgi-bin/ticket/getticket?' + query_str
         client = http_client.new_default_http_client()
