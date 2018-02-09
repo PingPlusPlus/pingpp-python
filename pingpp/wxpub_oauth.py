@@ -2,8 +2,9 @@
 
 import hashlib
 
-from pingpp import http_client, util
+from pingpp import http_client, util, proxy, ca_bundle
 from pingpp.six.moves.urllib.parse import urlencode, quote_plus
+from pingpp import verify_ssl_certs as verify
 
 
 class WxpubOauth:
@@ -23,11 +24,13 @@ class WxpubOauth:
         :return: openid 微信公众号授权用户唯一标识, 可用于微信网页内支付
         """
         url = WxpubOauth.create_oauth_url_for_openid(app_id, app_secret, code)
-        client = http_client.new_default_http_client()
-        rbody, rcode = client.request('GET', url, {})
+        client = http_client.new_default_http_client(
+            verify_ssl_certs=verify, proxy=proxy, ca_bundle=ca_bundle)
+        rbody, rcode, headers = client.request('GET', url, {})
         if rcode == 200:
             data = util.json.loads(rbody)
-            return data['openid']
+            if 'openid' in data:
+                return data['openid']
 
         return None
 
@@ -88,11 +91,15 @@ class WxpubOauth:
         query_str = urlencode(data)
         access_token_url = \
             'https://api.weixin.qq.com/cgi-bin/token?' + query_str
-        client = http_client.new_default_http_client()
-        rbody, rcode = client.request('GET', access_token_url, {})
+        client = http_client.new_default_http_client(
+            verify_ssl_certs=verify, proxy=proxy, ca_bundle=ca_bundle)
+        rbody, rcode, headers = client.request('GET', access_token_url, {})
         rbody = util.json.loads(rbody)
         if rcode != 200:
             return rbody
+
+        if 'access_token' not in rbody:
+            return None
 
         data = dict()
         data['access_token'] = rbody['access_token']
@@ -100,11 +107,14 @@ class WxpubOauth:
         query_str = urlencode(data)
         jsapi_ticket_url = \
             'https://api.weixin.qq.com/cgi-bin/ticket/getticket?' + query_str
-        client = http_client.new_default_http_client()
-        rbody, rcode = client.request('GET', jsapi_ticket_url, {})
+        client = http_client.new_default_http_client(
+            verify_ssl_certs=verify, proxy=proxy, ca_bundle=ca_bundle)
+        rbody, rcode, headers = client.request('GET', jsapi_ticket_url, {})
         data = util.json.loads(rbody)
         if rcode == 200:
             return data
+
+        return None
 
     @staticmethod
     def get_signature(charge, jsapi_ticket, url):
@@ -126,5 +136,5 @@ class WxpubOauth:
             key.lower(),
             sign_dict[key]
         ) for key in sorted(sign_dict)])
-        sign_dict['signature'] = hashlib.sha1(string).hexdigest()
-        return sign_dict['signature']
+
+        return hashlib.sha1(string).hexdigest()

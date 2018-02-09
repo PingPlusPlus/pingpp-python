@@ -25,6 +25,9 @@ else:
     install_requires.append('requests >= 0.8.8')
     install_requires.append('pycryptodome >= 3.4.7')
 
+with open('LONG_DESCRIPTION.rst') as f:
+    long_description = f.read()
+
 # Don't import pingpp module here, since deps may not be installed
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'pingpp'))
 from version import VERSION  # noqa
@@ -43,6 +46,7 @@ setup(
               'pingpp.api_resources.abstract'],
     version=VERSION,
     description='Ping++ python bindings',
+    long_description=long_description,
     author='Ping++',
     author_email='support@pingxx.com',
     url='https://pingxx.com/',
