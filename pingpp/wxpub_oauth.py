@@ -28,6 +28,8 @@ class WxpubOauth:
             verify_ssl_certs=verify, proxy=proxy, ca_bundle=ca_bundle)
         rbody, rcode, headers = client.request('GET', url, {})
         if rcode == 200:
+            if hasattr(rbody, 'decode'):
+                rbody = rbody.decode('utf-8')
             data = util.json.loads(rbody)
             if 'openid' in data:
                 return data['openid']
@@ -94,6 +96,8 @@ class WxpubOauth:
         client = http_client.new_default_http_client(
             verify_ssl_certs=verify, proxy=proxy, ca_bundle=ca_bundle)
         rbody, rcode, headers = client.request('GET', access_token_url, {})
+        if hasattr(rbody, 'decode'):
+            rbody = rbody.decode('utf-8')
         rbody = util.json.loads(rbody)
         if rcode != 200:
             return rbody
@@ -110,6 +114,8 @@ class WxpubOauth:
         client = http_client.new_default_http_client(
             verify_ssl_certs=verify, proxy=proxy, ca_bundle=ca_bundle)
         rbody, rcode, headers = client.request('GET', jsapi_ticket_url, {})
+        if hasattr(rbody, 'decode'):
+            rbody = rbody.decode('utf-8')
         data = util.json.loads(rbody)
         if rcode == 200:
             return data
