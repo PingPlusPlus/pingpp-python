@@ -822,4 +822,21 @@ pingpp.RoyaltyTransaction.list(**params)
 pingpp.RoyaltyTransaction.retrieve('ROYALTY_TRANSACTION_ID')
 ```
 
+### 查询余额结算列表
+```python
+pingpp.BalanceSettlement.list(page=1,per_page=10)
+```
+
+### 查询余额结算
+```python
+pingpp.BalanceSettlement.retrieve("670180226606668883880001")
+```
+
+### 银行卡信息查询
+```python
+pingpp.CardInfo.query(
+    app=app_id,
+    bank_account='6214888888888888'
+)
+```
 **详细信息请参考 [API 文档](https://pingxx.com/document/api?python)。**

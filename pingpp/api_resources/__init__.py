@@ -7,6 +7,7 @@ from pingpp.api_resources.list_object import ListObject
 from pingpp.api_resources.balance_bonus import BalanceBonus
 from pingpp.api_resources.balance_transaction import BalanceTransaction
 from pingpp.api_resources.balance_transfer import BalanceTransfer
+from pingpp.api_resources.balance_settlement import BalanceSettlement
 from pingpp.api_resources.batch_refund import BatchRefund
 from pingpp.api_resources.batch_transfer import BatchTransfer
 from pingpp.api_resources.batch_withdrawal import BatchWithdrawal
@@ -17,6 +18,7 @@ from pingpp.api_resources.coupon_template import CouponTemplate
 from pingpp.api_resources.customs import Customs
 from pingpp.api_resources.event import Event
 from pingpp.api_resources.identification import Identification
+from pingpp.api_resources.card_info import CardInfo
 from pingpp.api_resources.order import Order
 from pingpp.api_resources.recharge import Recharge
 from pingpp.api_resources.red_envelope import RedEnvelope

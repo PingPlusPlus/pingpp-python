@@ -1,7 +1,9 @@
 # ChangeLog
 
-## 2.6.4
+## 2.7.0
 - 新增
+    - 余额结算查询/列表接口
+    - 银行卡信息查询接口
     - WxpubOauth.get_lite_openid(app_id, app_secret, code) 用于获取小程序 openid
 - 修改
     - 更新 CA 证书
