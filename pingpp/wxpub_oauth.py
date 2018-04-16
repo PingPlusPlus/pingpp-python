@@ -37,6 +37,28 @@ class WxpubOauth:
         return None
 
     @staticmethod
+    def get_lite_openid(app_id, app_secret, code):
+        """
+        获取微信小程序授权用户唯一标识
+        :param app_id: 微信公众号应用唯一标识
+        :param app_secret: 微信小程序应用密钥（注意保密）
+        :param code: 授权code, 通过调用WxpubOAuth.createOauthUrlForCode来获取
+        :return: openid 微信小程序授权用户唯一标识, 可用于小程序支付
+        """
+        url = WxpubOauth.create_lite_oauth_url_for_openid(app_id, app_secret, code)
+        client = http_client.new_default_http_client(
+            verify_ssl_certs=verify, proxy=proxy, ca_bundle=ca_bundle)
+        rbody, rcode, headers = client.request('GET', url, {})
+        if rcode == 200:
+            if hasattr(rbody, 'decode'):
+                rbody = rbody.decode('utf-8')
+            data = util.json.loads(rbody)
+            if 'openid' in data:
+                return data['openid']
+
+        return None
+
+    @staticmethod
     def create_oauth_url_for_code(app_id, redirect_url, more_info=False):
         """
         用于获取授权 code 的 URL 地址，此地址用于用户身份鉴权，获取用户身份信息，同时重定向到 redirect_url
@@ -77,6 +99,24 @@ class WxpubOauth:
         query_str = urlencode(data)
 
         return "https://api.weixin.qq.com/sns/oauth2/access_token?" + query_str
+
+    @staticmethod
+    def create_lite_oauth_url_for_openid(app_id, app_secret, code):
+        """
+        获取openid的URL地址
+        :param app_id: 微信公众号应用唯一标识
+        :param app_secret: 微信公众号应用密钥（注意保密）
+        :param code: 授权code, 通过调用WxpubOAuth.createOauthUrlForCode来获取
+        :return: 获取openid的URL地址
+        """
+        data = dict()
+        data['appid'] = app_id
+        data['secret'] = app_secret
+        data['js_code'] = code
+        data['grant_type'] = 'authorization_code'
+        query_str = urlencode(data)
+
+        return "https://api.weixin.qq.com/sns/jscode2session?" + query_str
 
     @staticmethod
     def get_jsapi_ticket(app_id, app_secret):
