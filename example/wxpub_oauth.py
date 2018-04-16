@@ -2,7 +2,6 @@
 
 import pingpp
 
-
 # 微信公众号平台的 App ID
 wx_app_id = 'wx9283883h477376s'
 # 微信公众号平台的 App Secret
@@ -27,3 +26,14 @@ print(openid)
 # 获取 jsapi_ticket
 jsapi_ticket = pingpp.WxpubOauth.get_jsapi_ticket(wx_app_id, wx_app_secret)
 print(jsapi_ticket)
+
+# -------
+# 获取微信小程序open_id
+'''
+小程序调用wx.login() 获取 临时登录凭证code ，并回传到开发者服务器。
+临时登录凭证code只能使用一次
+'''
+
+wx_lite_code = '011TFt8z15UDqh0xcF5z1A5E8z1TFt8W'
+wx_lite_openid = pingpp.WxpubOauth.get_openid(wx_app_id, wx_app_secret, wx_lite_code)
+print(wx_lite_openid)
