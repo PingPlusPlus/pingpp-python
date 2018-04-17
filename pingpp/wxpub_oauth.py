@@ -9,9 +9,12 @@ from pingpp import verify_ssl_certs as verify
 
 class WxpubOauth:
     """
-    用于微信公众号OAuth2.0鉴权，用户授权后获取授权用户唯一标识openid
-    WxpubOAuth中的方法都是可选的，开发者也可根据实际情况自行开发相关功能
-    详细内容可参考http://mp.weixin.qq.com/wiki/17/c0f37d5704f0b64713d5d2c37b468d75.html
+    用于微信公众平台，用户授权后获取授权用户唯一标识 openid
+    WxpubOAuth 中的方法都是可选的，开发者也可根据实际情况自行开发相关功能
+    详细内容可参考
+    https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421140842
+    小程序参考
+    https://developers.weixin.qq.com/miniprogram/dev/api/api-login.html#wxloginobject
     """
 
     @staticmethod
@@ -42,10 +45,11 @@ class WxpubOauth:
         获取微信小程序授权用户唯一标识
         :param app_id: 微信公众号应用唯一标识
         :param app_secret: 微信小程序应用密钥（注意保密）
-        :param code: 授权code, 通过调用WxpubOAuth.createOauthUrlForCode来获取
+        :param code: 授权 code, 调用小程序接口 wx.login() 获取
         :return: openid 微信小程序授权用户唯一标识, 可用于小程序支付
         """
-        url = WxpubOauth.create_lite_oauth_url_for_openid(app_id, app_secret, code)
+        url = WxpubOauth.create_lite_oauth_url_for_openid(
+            app_id, app_secret, code)
         client = http_client.new_default_http_client(
             verify_ssl_certs=verify, proxy=proxy, ca_bundle=ca_bundle)
         rbody, rcode, headers = client.request('GET', url, {})
@@ -102,13 +106,6 @@ class WxpubOauth:
 
     @staticmethod
     def create_lite_oauth_url_for_openid(app_id, app_secret, code):
-        """
-        获取openid的URL地址
-        :param app_id: 微信公众号应用唯一标识
-        :param app_secret: 微信公众号应用密钥（注意保密）
-        :param code: 授权code, 通过调用WxpubOAuth.createOauthUrlForCode来获取
-        :return: 获取openid的URL地址
-        """
         data = dict()
         data['appid'] = app_id
         data['secret'] = app_secret

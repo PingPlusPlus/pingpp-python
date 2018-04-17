@@ -1,5 +1,11 @@
 # ChangeLog
 
+## 2.6.4
+- 新增
+    - WxpubOauth.get_lite_openid(app_id, app_secret, code) 用于获取小程序 openid
+- 修改
+    - 更新 CA 证书
+
 ## 2.6.1
 - 修复
     - WxpubOauth 的 python3 兼容问题
