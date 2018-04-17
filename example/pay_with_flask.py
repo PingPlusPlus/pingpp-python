@@ -78,5 +78,6 @@ def do_charge():
     return Response(json.dumps(response_charge),
                     mimetype='application/json,charset=UTF-8')
 
+
 if __name__ == '__main__':
     app.run(debug=True, port=8888, host='0.0.0.0')
