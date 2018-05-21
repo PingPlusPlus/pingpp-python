@@ -13,6 +13,7 @@ from pingpp.api_resources.batch_transfer import BatchTransfer
 from pingpp.api_resources.batch_withdrawal import BatchWithdrawal
 from pingpp.api_resources.channel import Channel
 from pingpp.api_resources.charge import Charge
+from pingpp.api_resources.agreement import Agreement
 from pingpp.api_resources.coupon import Coupon
 from pingpp.api_resources.coupon_template import CouponTemplate
 from pingpp.api_resources.customs import Customs
