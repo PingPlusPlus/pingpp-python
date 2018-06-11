@@ -33,8 +33,8 @@ params = {
     # channel 值必须是 银联：unionpay，支付宝：alipay，微信：wx_pub，通联：allinpay，京东：jdpay其中一种
     'channel': 'unionpay',
     "extra": {
-        "card_number": "6226234567890006",  # 提现订单号，为长度不大于 16 的数字
-        "user_name": "姓名",
+        "account": "6226234567890006",  # 提现订单号，为长度不大于 16 的数字
+        "name": "姓名",
         "open_bank_code": "0102",
     },
     # 使用结算账户提现，不需要填写 extra 相关参数，同时填写时，结算账号不生效
