@@ -5,7 +5,7 @@ from pingpp.util import (  # noqa
     convert_array_to_dict,
     convert_to_pingpp_object,
 )
-from pingpp.pingpp_object import StripeObject  # noqa
+from pingpp.pingpp_object import PingppObject  # noqa
 from pingpp.api_resources.abstract import (  # noqa
     APIResource,
     CreateableAPIResource,
